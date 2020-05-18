@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 
-namespace Framework.LockHelper
+namespace Framework
 {
     public delegate Int32 Morpher<TResult, TArgument>(Int32 startVal, TArgument argument, out TResult morphResult);
     public class Common

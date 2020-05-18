@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 
-namespace Framework.LockHelper
+namespace Framework
 {
     /// <summary>
     /// 代替互斥锁,达到当前线程通过,其他线程互斥的目的
