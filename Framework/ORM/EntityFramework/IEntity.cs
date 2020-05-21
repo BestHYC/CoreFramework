@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Framework.ORM.EntityFramework
 {
-    public interface IEntity : IEntity<int>
+    public interface IEntity : IEntity<Int32>
     {
     }
 

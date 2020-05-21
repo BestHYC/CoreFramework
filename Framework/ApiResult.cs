@@ -10,7 +10,7 @@ namespace Framework
     }
     public class ApiResult
     {
-        public ResultStatusEnum Status { get; set; }
+        public ResultStatusEnum Code { get; set; }
         public String Message { get; set; }
     }
     public class ApiResult<T> : ApiResult

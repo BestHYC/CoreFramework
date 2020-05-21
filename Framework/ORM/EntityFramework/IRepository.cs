@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Framework.ORM.EntityFramework
 {
-    public interface IRepository<TEntity> : IRepository<TEntity, int>
+    public interface IRepository<TEntity> : IRepository<TEntity, Int32>
             where TEntity : class, IEntity
     {
     }
