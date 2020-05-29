@@ -21,7 +21,7 @@ namespace Framework.ORM.EntityFramework
         : RepositoryBase<TEntity, TPrimaryKey>
         where TEntity : class, IEntity<TPrimaryKey>
     {
-        private readonly DbContext _dbContext;
+        protected readonly DbContext _dbContext;
         public virtual DbSet<TEntity> Table => _dbContext.Set<TEntity>();
         public Repository(DbContext context)
         {
@@ -30,7 +30,7 @@ namespace Framework.ORM.EntityFramework
 
         public override IQueryable<TEntity> Query()
         {
-            return Table.AsQueryable();
+            return Table.AsQueryable().AsNoTracking();
         }
 
         public override IQueryable<TEntity> QueryNoTracking()
@@ -139,7 +139,16 @@ namespace Framework.ORM.EntityFramework
 
         protected virtual void AttachIfNot(TEntity entity)
         {
-            var entry = _dbContext.ChangeTracker.Entries().FirstOrDefault(ent => ent.Entity == entity);
+            var entry = _dbContext.ChangeTracker.Entries().FirstOrDefault(ent => 
+            {
+                var item = (ent.Entity as TEntity);
+                if (item != null)
+                {
+                    return Object.Equals(item.Id, entity.Id);
+                }
+                return false;
+            });
+            
             if (entry != null)
             {
                 return;
