@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Framework.ORM
+namespace Framework
 {
     /// <summary>
     /// Redis 助手

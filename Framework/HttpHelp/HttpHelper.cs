@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Framework.HttpHelp
+namespace Framework
 {
     public class HttpHelper
     {
