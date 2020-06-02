@@ -3,8 +3,11 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.1.10</Version>
-    <Description>修改ef query为not tracking</Description>
+    <Version>1.0.1.11</Version>
+    <Description>1.新增MQ
+2.新增RedisHelper
+3.新增HttpHelper
+4.新增Nlog</Description>
     <Authors>Best_Hong</Authors>
     <PackageProjectUrl>https://github.com/BestHYC/CoreFramework.git</PackageProjectUrl>
     <PackageReleaseNotes>1.全局配置扩展
@@ -12,6 +15,8 @@
 3.锁的基本使用方式
 4.统一权限配置
 5.基于表达式树的AutoMapper自己实现方式</PackageReleaseNotes>
+    <AssemblyVersion>1.0.1.11</AssemblyVersion>
+    <FileVersion>1.0.1.11</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
