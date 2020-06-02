@@ -141,7 +141,7 @@ namespace Framework.ORM.EntityFramework
         {
             var entry = _dbContext.ChangeTracker.Entries().FirstOrDefault(ent => 
             {
-                var item = (ent.Entity as TEntity);
+                var item = ent.Entity as TEntity;
                 if (item != null)
                 {
                     return Object.Equals(item.Id, entity.Id);
@@ -151,7 +151,7 @@ namespace Framework.ORM.EntityFramework
             
             if (entry != null)
             {
-                return;
+                _dbContext.Entry(entry.Entity).State = EntityState.Detached;
             }
 
             Table.Attach(entity);
