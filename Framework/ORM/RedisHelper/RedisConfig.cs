@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Framework.ORM
+namespace Framework
 {
     public class RedisConfig
     {
