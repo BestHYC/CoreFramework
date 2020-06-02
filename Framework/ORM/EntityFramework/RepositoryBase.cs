@@ -78,72 +78,72 @@ namespace Framework.ORM.EntityFramework
         #endregion
 
         #region Insert
-        public abstract TEntity Insert(TEntity entity);
+        public abstract TEntity Insert(TEntity entity, Action<TEntity> action = null);
 
-        public abstract Task<TEntity> InsertAsync(TEntity entity);
+        public abstract Task<TEntity> InsertAsync(TEntity entity, Action<TEntity> action = null);
 
-        public abstract void Insert(List<TEntity> entities);
+        public abstract void Insert(List<TEntity> entities, Action<List<TEntity>> action = null);
 
-        public abstract Task InsertAsync(List<TEntity> entities);
+        public abstract Task InsertAsync(List<TEntity> entities, Action<List<TEntity>> action = null);
         #endregion
 
         #region 修改
-        public abstract TEntity Update(TEntity entity);
+        public abstract TEntity Update(TEntity entity, Action<TEntity> action = null);
 
-        public virtual async Task<TEntity> UpdateAsync(TEntity entity)
+        public virtual async Task<TEntity> UpdateAsync(TEntity entity, Action<TEntity> action = null)
         {
-            return await Task.FromResult(Update(entity));
+            return await Task.FromResult(Update(entity, action));
         }
         #endregion
 
         #region Delete
-        public abstract void Delete(TEntity entity);
+        public abstract void Delete(TEntity entity, Action<TEntity> action= null);
 
-        public virtual async Task DeleteAsync(TEntity entity)
+        public virtual async Task DeleteAsync(TEntity entity, Action<TEntity> action = null)
         {
-            Delete(entity);
+            Delete(entity, action);
             await Task.CompletedTask;
         }
 
-        public abstract void Delete(TPrimaryKey id);
+        public abstract void Delete(TPrimaryKey id, Action<TEntity> action = null);
 
-        public virtual Task DeleteAsync(TPrimaryKey id)
+        public virtual Task DeleteAsync(TPrimaryKey id, Action<TEntity> action = null)
         {
-            Delete(id);
+            Delete(id, action);
             return Task.CompletedTask;
         }
 
-        public abstract void Delete(Expression<Func<TEntity, bool>> predicate);
+        public abstract void Delete(Expression<Func<TEntity, bool>> predicate, Action<TEntity> action = null);
 
-        public virtual Task DeleteAsync(Expression<Func<TEntity, bool>> predicate)
+        public virtual Task DeleteAsync(Expression<Func<TEntity, bool>> predicate, Action<TEntity> action = null)
         {
-            Delete(predicate);
+            Delete(predicate, action);
             return Task.CompletedTask;
         }
         #endregion
 
         #region HardDelete
-        public abstract void HardDelete(TEntity entity);
+        public abstract void HardDelete(TEntity entity, Action<TEntity> action = null);
 
-        public virtual async Task HardDeleteAsync(TEntity entity)
+        public virtual async Task HardDeleteAsync(TEntity entity, Action<TEntity> action = null)
         {
-            HardDelete(entity);
+            HardDelete(entity,action);
             await Task.CompletedTask;
         }
 
-        public abstract void HardDelete(TPrimaryKey id);
+        public abstract void HardDelete(TPrimaryKey id, Action<TEntity> action = null);
 
-        public virtual async Task HardDeleteAsync(TPrimaryKey id)
+        public virtual async Task HardDeleteAsync(TPrimaryKey id, Action<TEntity> action = null)
         {
-            HardDelete(id);
+            HardDelete(id, action);
             await Task.CompletedTask;
         }
 
-        public abstract void HardDelete(Expression<Func<TEntity, bool>> predicate);
+        public abstract void HardDelete(Expression<Func<TEntity, bool>> predicate, Action<TEntity> action = null);
 
-        public virtual async Task HardDeleteAsync(Expression<Func<TEntity, bool>> predicate)
+        public virtual async Task HardDeleteAsync(Expression<Func<TEntity, bool>> predicate, Action<TEntity> action = null)
         {
-            HardDelete(predicate);
+            HardDelete(predicate, action);
             await Task.CompletedTask;
         }
         #endregion

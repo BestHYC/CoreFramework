@@ -58,15 +58,15 @@ namespace Framework.ORM.EntityFramework
         /// <summary>
         /// 新增
         /// </summary>
-        TEntity Insert(TEntity entity);
-        Task<TEntity> InsertAsync(TEntity entity);
+        TEntity Insert(TEntity entity, Action<TEntity> action = null);
+        Task<TEntity> InsertAsync(TEntity entity, Action<TEntity> action = null);
 
         /// <summary>
         /// 批量新增
         /// </summary>
         /// <param name="entities"></param>
-        void Insert(List<TEntity> entities);
-        Task InsertAsync(List<TEntity> entities);
+        void Insert(List<TEntity> entities, Action<List<TEntity>> action = null);
+        Task InsertAsync(List<TEntity> entities, Action<List<TEntity>> action = null);
 
         #endregion Insert
 
@@ -75,8 +75,8 @@ namespace Framework.ORM.EntityFramework
         /// <summary>
         /// 更新
         /// </summary>
-        TEntity Update(TEntity entity);
-        Task<TEntity> UpdateAsync(TEntity entity);
+        TEntity Update(TEntity entity, Action<TEntity> action = null);
+        Task<TEntity> UpdateAsync(TEntity entity, Action<TEntity> action = null);
 
         #endregion Update
 
@@ -86,12 +86,12 @@ namespace Framework.ORM.EntityFramework
         /// 逻辑删除，标记IsDelete = 1
         /// </summary>
         /// <param name="entity"></param>
-        void Delete(TEntity entity);
-        Task DeleteAsync(TEntity entity);
-        void Delete(TPrimaryKey id);
-        Task DeleteAsync(TPrimaryKey id);
-        void Delete(Expression<Func<TEntity, bool>> predicate);
-        Task DeleteAsync(Expression<Func<TEntity, bool>> predicate);
+        void Delete(TEntity entity, Action<TEntity> action = null);
+        Task DeleteAsync(TEntity entity, Action<TEntity> action = null);
+        void Delete(TPrimaryKey id, Action<TEntity> action = null);
+        Task DeleteAsync(TPrimaryKey id, Action<TEntity> action = null);
+        void Delete(Expression<Func<TEntity, bool>> predicate, Action<TEntity> action = null);
+        Task DeleteAsync(Expression<Func<TEntity, bool>> predicate, Action<TEntity> action = null);
 
         #endregion
 
@@ -101,12 +101,12 @@ namespace Framework.ORM.EntityFramework
         /// 物理删除，从数据库中移除
         /// </summary>
         /// <param name="entity"></param>
-        void HardDelete(TEntity entity);
-        Task HardDeleteAsync(TEntity entity);
-        void HardDelete(TPrimaryKey id);
-        Task HardDeleteAsync(TPrimaryKey id);
-        void HardDelete(Expression<Func<TEntity, bool>> predicate);
-        Task HardDeleteAsync(Expression<Func<TEntity, bool>> predicate);
+        void HardDelete(TEntity entity, Action<TEntity> action = null);
+        Task HardDeleteAsync(TEntity entity, Action<TEntity> action = null);
+        void HardDelete(TPrimaryKey id, Action<TEntity> action = null);
+        Task HardDeleteAsync(TPrimaryKey id, Action<TEntity> action = null);
+        void HardDelete(Expression<Func<TEntity, bool>> predicate, Action<TEntity> action = null);
+        Task HardDeleteAsync(Expression<Func<TEntity, bool>> predicate, Action<TEntity> action = null);
 
         #endregion
 
