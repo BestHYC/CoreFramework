@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using NLog;
 using RabbitMQ.Client;
 using System;
@@ -11,17 +12,18 @@ namespace Framework
     {
 
         private readonly IModel _channel;
-        public RabbitMQClient(RabbitConfig options)
+        public RabbitMQClient(IOptions<RabbitConfig> option)
         {
+            var config = option.Value;
             try
             {
                 var factory = new ConnectionFactory()
                 {
-                    HostName = options.Host,
-                    UserName = options.UserName,
-                    Password = options.Password,
-                    Port = options.Port,
-                    VirtualHost = options.VHost
+                    HostName = config.Host,
+                    UserName = config.UserName,
+                    Password = config.Password,
+                    Port = config.Port,
+                    VirtualHost = config.VHost
                 };
                 var connection = factory.CreateConnection();
                 _channel = connection.CreateModel();
