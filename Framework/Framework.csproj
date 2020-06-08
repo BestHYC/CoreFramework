@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.1.19</Version>
+    <Version>1.0.1.20</Version>
     <Description>1.增加仓储层委托,便于执行回调</Description>
     <Authors>Best_Hong</Authors>
     <PackageProjectUrl>https://github.com/BestHYC/CoreFramework.git</PackageProjectUrl>
@@ -12,8 +12,8 @@
 3.锁的基本使用方式
 4.统一权限配置
 5.基于表达式树的AutoMapper自己实现方式</PackageReleaseNotes>
-    <AssemblyVersion>1.0.1.19</AssemblyVersion>
-    <FileVersion>1.0.1.19</FileVersion>
+    <AssemblyVersion>1.0.1.20</AssemblyVersion>
+    <FileVersion>1.0.1.20</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

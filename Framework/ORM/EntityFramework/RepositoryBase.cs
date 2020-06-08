@@ -41,9 +41,9 @@ namespace Framework.ORM.EntityFramework
             return QueryNoTracking().Where(predicate).ToList();
         }
 
-        public virtual Task<List<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> predicate)
+        public virtual async Task<List<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> predicate)
         {
-            return QueryNoTracking().Where(predicate).ToListAsync();
+            return await QueryNoTracking().Where(predicate).ToListAsync();
         }
 
         public virtual TEntity Get(TPrimaryKey id)
@@ -61,9 +61,9 @@ namespace Framework.ORM.EntityFramework
             return QueryNoTracking().FirstOrDefault();
         }
 
-        public virtual Task<TEntity> FirstOrDefaultAsync()
+        public virtual async Task<TEntity> FirstOrDefaultAsync()
         {
-            return QueryNoTracking().FirstOrDefaultAsync();
+            return await QueryNoTracking().FirstOrDefaultAsync();
         }
 
         public virtual TEntity FirstOrDefault(Expression<Func<TEntity, bool>> predicate)
@@ -71,81 +71,54 @@ namespace Framework.ORM.EntityFramework
             return QueryNoTracking().FirstOrDefault(predicate);
         }
 
-        public virtual Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate)
+        public virtual async Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate)
         {
-            return QueryNoTracking().FirstOrDefaultAsync(predicate);
+            return await QueryNoTracking().FirstOrDefaultAsync(predicate);
         }
         #endregion
 
         #region Insert
-        public abstract TEntity Insert(TEntity entity, Action<TEntity> action = null);
+        public abstract TEntity Insert(TEntity entity);
 
-        public abstract Task<TEntity> InsertAsync(TEntity entity, Action<TEntity> action = null);
+        public abstract Task<TEntity> InsertAsync(TEntity entity);
 
-        public abstract void Insert(List<TEntity> entities, Action<List<TEntity>> action = null);
+        public abstract void Insert(List<TEntity> entities);
 
-        public abstract Task InsertAsync(List<TEntity> entities, Action<List<TEntity>> action = null);
+        public abstract Task InsertAsync(List<TEntity> entities);
         #endregion
 
         #region 修改
-        public abstract TEntity Update(TEntity entity, Action<TEntity> action = null);
+        public abstract TEntity Update(TEntity entity);
 
-        public virtual async Task<TEntity> UpdateAsync(TEntity entity, Action<TEntity> action = null)
-        {
-            return await Task.FromResult(Update(entity, action));
-        }
+        public abstract Task<TEntity> UpdateAsync(TEntity entity);
         #endregion
 
         #region Delete
-        public abstract void Delete(TEntity entity, Action<TEntity> action= null);
+        public abstract void Delete(TEntity entity);
 
-        public virtual async Task DeleteAsync(TEntity entity, Action<TEntity> action = null)
-        {
-            Delete(entity, action);
-            await Task.CompletedTask;
-        }
+        public abstract Task DeleteAsync(TEntity entity);
 
-        public abstract void Delete(TPrimaryKey id, Action<TEntity> action = null);
+        public abstract void Delete(TPrimaryKey id);
 
-        public virtual Task DeleteAsync(TPrimaryKey id, Action<TEntity> action = null)
-        {
-            Delete(id, action);
-            return Task.CompletedTask;
-        }
+        public abstract Task DeleteAsync(TPrimaryKey id);
 
-        public abstract void Delete(Expression<Func<TEntity, bool>> predicate, Action<TEntity> action = null);
+        public abstract void Delete(Expression<Func<TEntity, bool>> predicate);
 
-        public virtual Task DeleteAsync(Expression<Func<TEntity, bool>> predicate, Action<TEntity> action = null)
-        {
-            Delete(predicate, action);
-            return Task.CompletedTask;
-        }
+        public abstract Task DeleteAsync(Expression<Func<TEntity, bool>> predicate);
         #endregion
 
         #region HardDelete
-        public abstract void HardDelete(TEntity entity, Action<TEntity> action = null);
+        public abstract void HardDelete(TEntity entity);
 
-        public virtual async Task HardDeleteAsync(TEntity entity, Action<TEntity> action = null)
-        {
-            HardDelete(entity,action);
-            await Task.CompletedTask;
-        }
+        public abstract Task HardDeleteAsync(TEntity entity);
 
-        public abstract void HardDelete(TPrimaryKey id, Action<TEntity> action = null);
+        public abstract void HardDelete(TPrimaryKey id);
 
-        public virtual async Task HardDeleteAsync(TPrimaryKey id, Action<TEntity> action = null)
-        {
-            HardDelete(id, action);
-            await Task.CompletedTask;
-        }
+        public abstract Task HardDeleteAsync(TPrimaryKey id);
 
-        public abstract void HardDelete(Expression<Func<TEntity, bool>> predicate, Action<TEntity> action = null);
+        public abstract void HardDelete(Expression<Func<TEntity, bool>> predicate);
 
-        public virtual async Task HardDeleteAsync(Expression<Func<TEntity, bool>> predicate, Action<TEntity> action = null)
-        {
-            HardDelete(predicate, action);
-            await Task.CompletedTask;
-        }
+        public abstract Task HardDeleteAsync(Expression<Func<TEntity, bool>> predicate);
         #endregion
 
         #region Aggregate

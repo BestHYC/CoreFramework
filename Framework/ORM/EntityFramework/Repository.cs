@@ -38,132 +38,173 @@ namespace Framework.ORM.EntityFramework
             return Table.AsQueryable().AsNoTracking();
         }
 
-        public override TEntity Insert(TEntity entity, Action<TEntity> action)
+        public override TEntity Insert(TEntity entity)
         {
-            if (action != null) action.Invoke(entity);
             var newEntity = Table.Add(entity).Entity;
             _dbContext.SaveChanges();
             return newEntity;
         }
 
-        public override async Task<TEntity> InsertAsync(TEntity entity, Action<TEntity> action = null)
+        public override async Task<TEntity> InsertAsync(TEntity entity)
         {
-            if (action != null) action.Invoke(entity);
             var entityEntry = await Table.AddAsync(entity);
             await _dbContext.SaveChangesAsync();
             return entityEntry.Entity;
         }
 
-        public override void Insert(List<TEntity> entities, Action<List<TEntity>> action = null)
+        public override void Insert(List<TEntity> entities)
         {
-            if (action != null) action.Invoke(entities);
             Table.AddRange(entities);
             _dbContext.SaveChanges();
         }
 
-        public override async Task InsertAsync(List<TEntity> entities, Action<List<TEntity>> action = null)
+        public override async Task InsertAsync(List<TEntity> entities)
         {
-            if (action != null) action.Invoke(entities);
             await Table.AddRangeAsync(entities);
             await _dbContext.SaveChangesAsync();
         }
 
-        public override TEntity Update(TEntity entity, Action<TEntity> action = null)
+        public override TEntity Update(TEntity entity)
         {
             AttachIfNot(entity);
             _dbContext.Entry(entity).State = EntityState.Modified;
-            if (action != null) action.Invoke(entity);
             _dbContext.SaveChanges();
             return entity;
         }
+        public override async Task<TEntity> UpdateAsync(TEntity entity)
+        {
+            AttachIfNot(entity);
+            _dbContext.Entry(entity).State = EntityState.Modified;
+            await _dbContext.SaveChangesAsync();
+            return entity;
+        }
 
-        public override void Delete(TEntity entity, Action<TEntity> action = null)
+        public override void Delete(TEntity entity)
         {
             if (entity != null)
             {
                 entity.Isdelete = DBDefault.Delete;
-                Update(entity, action);
+                Update(entity);
+            }
+        }
+        public override async Task DeleteAsync(TEntity entity)
+        {
+            if (entity != null)
+            {
+                entity.Isdelete = DBDefault.Delete;
+                await UpdateAsync(entity);
             }
         }
 
-        public override void Delete(TPrimaryKey id, Action<TEntity> action = null)
+        public override void Delete(TPrimaryKey id)
         {
             var entity = Get(id);
-            Delete(entity, action);
+            Delete(entity);
+        }
+        public override async Task DeleteAsync(TPrimaryKey id)
+        {
+            var entity = await GetAsync(id);
+            await DeleteAsync(entity);
         }
 
-        public override void Delete(Expression<Func<TEntity, bool>> predicate, Action<TEntity> action = null)
+        public override void Delete(Expression<Func<TEntity, bool>> predicate)
         {
             var entities = GetAll(predicate);
             if (entities.Any())
             {
-                entities.ForEach(entity =>
+                foreach (var item in entities)
                 {
-                    Delete(entity, action);
-                });
+                    Delete(item);
+                }
             }
         }
-
-        public override void HardDelete(TEntity entity, Action<TEntity> action = null)
+        public override async Task DeleteAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+            var entities = await GetAllAsync(predicate);
+            if (entities.Any())
+            {
+                foreach(var item in entities)
+                {
+                    await DeleteAsync(item);
+                }
+            }
+        }
+        public override void HardDelete(TEntity entity)
         {
             AttachIfNot(entity);
             Table.Remove(entity);
-            if (action != null) action.Invoke(entity);
             _dbContext.SaveChanges();
         }
+        public override async Task HardDeleteAsync(TEntity entity)
+        {
+            AttachIfNot(entity);
+            Table.Remove(entity);
+            await _dbContext.SaveChangesAsync();
+        }
 
-        public override void HardDelete(TPrimaryKey id, Action<TEntity> action = null)
+        public override void HardDelete(TPrimaryKey id)
         {
             var entity = GetFromChangeTrackerOrNull(id);
-            if (entity != null)
+            if (entity == null)
             {
-                HardDelete(entity, action);
-                return;
+                entity = Get(id);
             }
-
-            entity = Get(id);
             if (entity != null)
             {
-                HardDelete(entity, action);
-                return;
+                HardDelete(entity);
+            }
+        }
+        public override async Task HardDeleteAsync(TPrimaryKey id)
+        {
+            var entity = GetFromChangeTrackerOrNull(id);
+            if (entity == null)
+            {
+                entity = await GetAsync(id);
+            }
+            if (entity != null)
+            {
+                await HardDeleteAsync(entity);
             }
         }
 
-        public override void HardDelete(Expression<Func<TEntity, bool>> predicate, Action<TEntity> action = null)
+        public override void HardDelete(Expression<Func<TEntity, bool>> predicate)
         {
+            if (predicate == null) return;
             var entities = Table.Where(predicate).ToList();
             if (entities.Any())
             {
                 entities.ForEach(entity =>
                 {
                     AttachIfNot(entity);
-                    if (action != null) action.Invoke(entity);
                 });
                 Table.RemoveRange(entities);
                 _dbContext.SaveChanges();
             }
         }
-
+        public override async Task HardDeleteAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+            if (predicate == null) return;
+            var entities = await Table.Where(predicate).ToListAsync();
+            if (entities.Any())
+            {
+                entities.ForEach(entity =>
+                {
+                    AttachIfNot(entity);
+                });
+                Table.RemoveRange(entities);
+                await _dbContext.SaveChangesAsync();
+            }
+        }
         protected virtual void AttachIfNot(TEntity entity)
         {
-            var entry = _dbContext.ChangeTracker.Entries().FirstOrDefault(ent => 
-            {
-                var item = ent.Entity as TEntity;
-                if (item != null)
-                {
-                    return Object.Equals(item.Id, entity.Id);
-                }
-                return false;
-            });
-            
+            if (entity == null) return;
+            var entry = GetFromChangeTrackerOrNull(entity.Id);
             if (entry != null)
             {
-                _dbContext.Entry(entry.Entity).State = EntityState.Detached;
+                _dbContext.Entry(entry).State = EntityState.Detached;
             }
-
             Table.Attach(entity);
         }
-
         private TEntity GetFromChangeTrackerOrNull(TPrimaryKey id)
         {
             var entry = _dbContext.ChangeTracker.Entries()

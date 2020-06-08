@@ -65,10 +65,10 @@ namespace Framework
             consumer.Received += (model, ea) =>
             {
                 var body = ea.Body;
-                var message = Encoding.UTF8.GetString(body.Span);
                 var result = false;
                 try
                 {
+                    var message = Encoding.UTF8.GetString(body.Span.ToArray());
                     result = Process(message);
                 }
                 catch (Exception)
