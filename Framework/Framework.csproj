@@ -3,8 +3,9 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.1.24</Version>
-    <Description>1.修改Nlog日志</Description>
+    <Version>1.0.1.25</Version>
+    <Description>1.添加Redis默认DB区间,在Framework.Redis空间下
+2.添加邮箱手机等验证方式</Description>
     <Authors>Best_Hong</Authors>
     <PackageProjectUrl>https://github.com/BestHYC/CoreFramework.git</PackageProjectUrl>
     <PackageReleaseNotes>1.全局配置扩展
@@ -12,8 +13,8 @@
 3.锁的基本使用方式
 4.统一权限配置
 5.基于表达式树的AutoMapper自己实现方式</PackageReleaseNotes>
-    <AssemblyVersion>1.0.1.20</AssemblyVersion>
-    <FileVersion>1.0.1.20</FileVersion>
+    <AssemblyVersion>1.0.1.25</AssemblyVersion>
+    <FileVersion>1.0.1.25</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
