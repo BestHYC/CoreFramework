@@ -16,40 +16,48 @@ namespace Framework
         public static LogHelper<T> Instance = new LogHelper<T>();
         private StringBuilder sb = new StringBuilder();
         private LogHelper() { }
+        private Object m_lock = new object();
         private String GetString(Object obj)
         {
-            String result = String.Empty;
-            sb.AppendLine("---------------------------------------------");
-            sb.AppendLine(DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"));
-            sb.Append(t.FullName);
-            sb.Append(" --- |");
-            if (obj == null)
+            lock (m_lock)
             {
-                sb.Append("参数为空");
-                result = sb.ToString();
+                String result = String.Empty;
+                sb.AppendLine("---------------------------------------------");
+                sb.Append(DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"));
+                sb.Append(t.FullName);
+                sb.AppendLine(" --- |");
+                if (obj == null)
+                {
+                    sb.Append("参数为空");
+                    result = sb.ToString();
+                    sb.Clear();
+                    return result;
+                }
+                result = sb.AppendLine(JsonConvert.SerializeObject(obj)).ToString();
                 sb.Clear();
                 return result;
             }
-            result = sb.Append(JsonConvert.SerializeObject(obj)).ToString();
-            sb.Clear();
-            return result;
         }
         private String GetString(String obj)
         {
-            String result = String.Empty;
-            sb.AppendLine("---------------------------------------------");
-            sb.Append(DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"));
-            sb.Append(t.FullName);
-            if (obj == null)
+            lock (m_lock)
             {
-                sb.Append("|参数为空");
-                result = sb.ToString();
+                String result = String.Empty;
+                sb.AppendLine("---------------------------------------------");
+                sb.Append(DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"));
+                sb.Append(t.FullName);
+                sb.AppendLine(" --- |");
+                if (obj == null)
+                {
+                    sb.Append("参数为空");
+                    result = sb.ToString();
+                    sb.Clear();
+                    return result;
+                }
+                result = sb.AppendLine(obj).ToString();
                 sb.Clear();
                 return result;
             }
-            result = sb.Append(obj).ToString();
-            sb.Clear();
-            return result;
         }
         /// <summary>
         /// 
