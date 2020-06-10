@@ -22,10 +22,12 @@ namespace Framework
             lock (m_lock)
             {
                 String result = String.Empty;
+                sb.AppendLine("");
                 sb.AppendLine("---------------------------------------------");
-                sb.Append(DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"));
+                sb.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                sb.Append("-----|");
                 sb.Append(t.FullName);
-                sb.AppendLine(" --- |");
+                sb.AppendLine("");
                 if (obj == null)
                 {
                     sb.Append("参数为空");
@@ -43,10 +45,12 @@ namespace Framework
             lock (m_lock)
             {
                 String result = String.Empty;
+                sb.AppendLine("");
                 sb.AppendLine("---------------------------------------------");
-                sb.Append(DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"));
+                sb.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                sb.Append("-----|");
                 sb.Append(t.FullName);
-                sb.AppendLine(" --- |");
+                sb.AppendLine("");
                 if (obj == null)
                 {
                     sb.Append("参数为空");
@@ -129,9 +133,10 @@ namespace Framework
         private static String GetString(Object obj)
         {
             String result = string.Empty;
+            sb.AppendLine("");
             sb.AppendLine("---------------------------------------------");
-            sb.AppendLine(DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"));
-            sb.Append(" --- |");
+            sb.AppendLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+            sb.AppendLine("");
             if (obj == null)
             {
                 sb.Append("参数为空");
@@ -147,9 +152,10 @@ namespace Framework
         private static String GetString(String obj)
         {
             String result = string.Empty;
+            sb.AppendLine("");
             sb.AppendLine("---------------------------------------------");
-            sb.AppendLine(DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"));
-            sb.Append(" --- |");
+            sb.AppendLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+            sb.AppendLine("");
             if (String.IsNullOrEmpty(obj))
             {
                 sb.Append("参数为空");
