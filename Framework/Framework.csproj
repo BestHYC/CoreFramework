@@ -3,9 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.1.29</Version>
-    <Description>1.添加Redis默认DB区间,在Framework.Redis空间下
-2.添加邮箱手机等验证方式</Description>
+    <Version>1.0.1.31</Version>
+    <Description>1.修改日志路径问题</Description>
     <Authors>Best_Hong</Authors>
     <PackageProjectUrl>https://github.com/BestHYC/CoreFramework.git</PackageProjectUrl>
     <PackageReleaseNotes>1.全局配置扩展

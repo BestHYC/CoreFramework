@@ -13,7 +13,11 @@ namespace Framework
         private Boolean m_isNlog = false;
         public LogKind()
         {
-            m_path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
+            m_path = Path.Combine(Environment.CurrentDirectory, "Logs");
+            if (!Directory.Exists(m_path))
+            {
+                Directory.CreateDirectory(m_path);
+            }
         }
         public void SetPath(String path)
         {
