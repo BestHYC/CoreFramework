@@ -14,7 +14,7 @@ namespace Framework
     /// </summary>
     public class LogHelper<T>
     {
-        private static LogKind m_logger;
+        private static SealedLogger m_logger;
         private static Type t = typeof(T);
         public static LogHelper<T> Instance = new LogHelper<T>();
         private StringBuilder sb = new StringBuilder();
@@ -22,7 +22,7 @@ namespace Framework
         private LogHelper() 
         {
             m_path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
-            m_logger = new LogKind();
+            m_logger = new SealedLogger();
         }
         private Object m_lock = new object();
         public static void UseNlog()
@@ -131,7 +131,7 @@ namespace Framework
     }
     public class LogHelper
     {
-        private static readonly LogKind m_logger = new LogKind();
+        private static readonly SealedLogger m_logger = new SealedLogger();
         private static StringBuilder sb = new StringBuilder();
         /// <summary>
         /// 
@@ -141,6 +141,10 @@ namespace Framework
         public static void Info(Object obj)
         {
             m_logger.Info(GetString(obj));
+        }
+        public static void UseNlog()
+        {
+            m_logger.UseNlog();
         }
         private static String GetString(Object obj)
         {
