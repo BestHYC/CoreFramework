@@ -310,21 +310,21 @@ namespace Framework
                     String critical = String.Empty;
                     if (Interlocked.CompareExchange(ref lock_Critical, 1, 0) == 0)
                     {
-                        while (Volatile.Read(ref lock_Critical_0) != 0)
+                        while (Interlocked.CompareExchange(ref lock_Critical_0, 1, 0) == 0)
                         {
-                            Thread.Sleep(2);
+                            critical = sb_Critical_0.ToString();
+                            sb_Critical_0.Clear();
                         }
-                        critical = sb_Critical_0.ToString();
-                        sb_Critical_0.Clear();
+                        Volatile.Write(ref lock_Critical_0, 0);
                     }
                     else if (Interlocked.CompareExchange(ref lock_Critical, 0, 1) == 1)
                     {
-                        while (Volatile.Read(ref lock_Critical_1) != 0)
+                        while (Interlocked.CompareExchange(ref lock_Critical_1, 1, 0) == 0)
                         {
-                            Thread.Sleep(2);
+                            critical = sb_Critical_1.ToString();
+                            sb_Critical_1.Clear();
                         }
-                        critical = sb_Critical_1.ToString();
-                        sb_Critical_1.Clear();
+                        Volatile.Write(ref lock_Critical_1, 0);
                     }
                     if (m_isNlog)
                     {
