@@ -39,7 +39,6 @@ namespace Framework
                 sb.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
                 sb.Append("-----|");
                 sb.Append(t.FullName);
-                sb.AppendLine("");
                 if (obj == null)
                 {
                     sb.Append("参数为空");
@@ -47,7 +46,7 @@ namespace Framework
                     sb.Clear();
                     return result;
                 }
-                result = sb.AppendLine(JsonConvert.SerializeObject(obj)).ToString();
+                result = sb.Append(JsonConvert.SerializeObject(obj)).ToString();
                 sb.Clear();
                 return result;
             }
@@ -62,7 +61,6 @@ namespace Framework
                 sb.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
                 sb.Append("-----|");
                 sb.Append(t.FullName);
-                sb.AppendLine("");
                 if (obj == null)
                 {
                     sb.Append("参数为空");
@@ -70,7 +68,7 @@ namespace Framework
                     sb.Clear();
                     return result;
                 }
-                result = sb.AppendLine(obj).ToString();
+                result = sb.Append(obj).ToString();
                 sb.Clear();
                 return result;
             }
@@ -146,43 +144,51 @@ namespace Framework
         {
             m_logger.UseNlog();
         }
+        private static Object m_lock = new object();
         private static String GetString(Object obj)
         {
-            String result = string.Empty;
-            sb.AppendLine("");
-            sb.AppendLine("---------------------------------------------");
-            sb.AppendLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-            sb.AppendLine("");
-            if (obj == null)
+            lock (m_lock)
             {
-                sb.Append("参数为空");
+                String result = string.Empty;
+                sb.AppendLine("");
+                sb.AppendLine("---------------------------------------------");
+                sb.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                sb.Append("-----|");
+                if (obj == null)
+                {
+                    sb.Append("参数为空");
+                    result = sb.ToString();
+                    sb.Clear();
+                    return result;
+                }
+                sb.Append(JsonConvert.SerializeObject(obj));
                 result = sb.ToString();
                 sb.Clear();
                 return result;
             }
-            sb.Append(JsonConvert.SerializeObject(obj));
-            result = sb.ToString();
-            sb.Clear();
-            return result;
+            
         }
         private static String GetString(String obj)
         {
-            String result = string.Empty;
-            sb.AppendLine("");
-            sb.AppendLine("---------------------------------------------");
-            sb.AppendLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-            sb.AppendLine("");
-            if (String.IsNullOrEmpty(obj))
+            lock (m_lock)
             {
-                sb.Append("参数为空");
+                String result = string.Empty;
+                sb.AppendLine("");
+                sb.AppendLine("---------------------------------------------");
+                sb.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                sb.Append("-----|");
+                if (String.IsNullOrEmpty(obj))
+                {
+                    sb.Append("参数为空");
+                    result = sb.ToString();
+                    sb.Clear();
+                    return result;
+                }
+                sb.Append(obj);
                 result = sb.ToString();
                 sb.Clear();
                 return result;
             }
-            sb.Append(obj);
-            result = sb.ToString();
-            sb.Clear();
-            return result;
         }
         public static void Info(String obj)
         {

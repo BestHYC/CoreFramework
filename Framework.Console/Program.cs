@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Threading;
 
 namespace Framework
 {
@@ -8,16 +10,23 @@ namespace Framework
         static void Main(string[] args)
         {
             //LogHelper.UseNlog();
-            for (Int32 i = 0; i < 10000; i++)
+            Stopwatch span = new Stopwatch();
+            span.Start();
+            for (Int32 i = 0; i < 100; i++)
             {
-                LogHelper.Critical(i);
-                LogHelper.Debug(i);
-                LogHelper.Error(i);
-                LogHelper.Info(i);
-                LogHelper.Trace(i);
-                LogHelper.Warn(i);
+                for(Int32 j=0; j< 10; j++)
+                {
+                    String str = i + "----" + j;
+                    LogHelper.Critical(str);
+                    LogHelper.Debug(str);
+                    LogHelper.Error(str);
+                    LogHelper.Info(str);
+                    LogHelper.Trace(str);
+                    LogHelper.Warn(str);
+                }
             }
-            Console.WriteLine("Hello World!");
+            span.Stop();
+            Console.WriteLine("Hello World!       " + span.Elapsed.Milliseconds);
             Console.ReadLine();
         }
     }
