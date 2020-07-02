@@ -27,7 +27,7 @@ namespace Framework
         /// <returns></returns>
         public static String HMACSHA256_UTF8(String key, String message)
         {
-            byte[] secretkey = Encoding.UTF8.GetBytes("6q8y3jl5jMelsYwPDYyFp3iskvhJDFh6");
+            byte[] secretkey = Encoding.UTF8.GetBytes(key);
             return HMACSHA256(secretkey, Encoding.UTF8.GetBytes(message));
         }
         /// <summary>

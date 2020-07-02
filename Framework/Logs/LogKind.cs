@@ -304,6 +304,7 @@ namespace Framework
         {
             try
             {
+                StringBuilder sb_all = new StringBuilder();
                 #region critical
                 if(sb_Critical_0.Length >0 || sb_Critical_1.Length > 0)
                 {
@@ -312,6 +313,7 @@ namespace Framework
                     {
                         while (Interlocked.CompareExchange(ref lock_Critical_0, 1, 0) == 0)
                         {
+                            
                             critical = sb_Critical_0.ToString();
                             sb_Critical_0.Clear();
                         }
@@ -332,6 +334,7 @@ namespace Framework
                     }
                     else
                     {
+                        sb_all.AppendLine(critical);
                         String path = Path.Combine(m_path, $"nlog-fatal-{DateTime.Now:yyyy-MM-dd}.log");
                         File.AppendAllText(path, critical);
                     }
@@ -365,6 +368,7 @@ namespace Framework
                     }
                     else
                     {
+                        sb_all.AppendLine(Debug);
                         String path = Path.Combine(m_path, $"nlog-debug-{DateTime.Now:yyyy-MM-dd}.log");
                         File.AppendAllText(path, Debug);
                     }
@@ -398,6 +402,7 @@ namespace Framework
                     }
                     else
                     {
+                        sb_all.AppendLine(Error);
                         String path = Path.Combine(m_path, $"nlog-error-{DateTime.Now:yyyy-MM-dd}.log");
                         File.AppendAllText(path, Error);
                     }
@@ -431,6 +436,7 @@ namespace Framework
                     }
                     else
                     {
+                        sb_all.AppendLine(Info);
                         String path = Path.Combine(m_path, $"nlog-info-{DateTime.Now:yyyy-MM-dd}.log");
                         File.AppendAllText(path, Info);
                     }
@@ -464,6 +470,7 @@ namespace Framework
                     }
                     else
                     {
+                        sb_all.AppendLine(Trace);
                         String path = Path.Combine(m_path, $"nlog-trace-{DateTime.Now:yyyy-MM-dd}.log");
                         File.AppendAllText(path, Trace);
                     }
@@ -492,6 +499,7 @@ namespace Framework
                         }
                         Volatile.Write(ref lock_Warn_1, 0);
                     }
+                    sb_all.AppendLine(Warn);
                     if (m_isNlog)
                     {
                         m_logger.Warn(Warn);
@@ -500,6 +508,18 @@ namespace Framework
                     {
                         String path = Path.Combine(m_path, $"nlog-warn-{DateTime.Now:yyyy-MM-dd}.log");
                         File.AppendAllText(path, Warn);
+                    }
+                }
+                if (sb_all.Length > 0)
+                {
+                    if (m_isNlog)
+                    {
+                        //m_logger.Warn(sb_all.ToString());
+                    }
+                    else
+                    {
+                        String path = Path.Combine(m_path, $"nlog-all-{DateTime.Now:yyyy-MM-dd}.log");
+                        File.AppendAllText(path, sb_all.ToString());
                     }
                 }
                 #endregion

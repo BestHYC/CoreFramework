@@ -11,6 +11,7 @@ namespace Framework
 {
     /// <summary>
     /// 日志扩展
+    /// 注意此处只有3个日志 warning日志,Infomation日志 及 all日志
     /// </summary>
     public class LogHelper<T>
     {
@@ -104,11 +105,11 @@ namespace Framework
         }
         public void LogError(String obj)
         {
-            m_logger.Error(GetString(obj));
+            m_logger.Warn(GetString(obj));
         }
         public void LogError(Object obj)
         {
-            m_logger.Error(GetString(obj));
+            m_logger.Warn(GetString(obj));
         }
         public void LogDebug(String obj)
         {
@@ -120,11 +121,11 @@ namespace Framework
         }
         public void LogCritical(Object obj)
         {
-            m_logger.Critical(GetString(obj));
+            m_logger.Warn(GetString(obj));
         }
         public void LogCritical(String obj)
         {
-            m_logger.Critical(GetString(obj));
+            m_logger.Warn(GetString(obj));
         }
     }
     public class LogHelper
@@ -212,11 +213,11 @@ namespace Framework
         }
         public static void Error(Object obj)
         {
-            m_logger.Error(GetString(obj));
+            m_logger.Warn(GetString(obj));
         }
         public static void Error(String obj)
         {
-            m_logger.Error(GetString(obj));
+            m_logger.Warn(GetString(obj));
         }
         public static void Debug(Object obj)
         {
@@ -228,11 +229,11 @@ namespace Framework
         }
         public static void Critical(String obj)
         {
-            m_logger.Critical(GetString(obj));
+            m_logger.Warn(GetString(obj));
         }
         public static void Critical(Object obj)
         {
-            m_logger.Critical(GetString(obj));
+            m_logger.Warn(GetString(obj));
         }
     }
 }
