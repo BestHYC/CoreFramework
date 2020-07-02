@@ -33,20 +33,23 @@ namespace Framework
                 LogHelper.Error($"RabbitMQClient init fail,ErrorMessage{ex}");
             }
         }
-
+        private Object m_lock = new object();
         public virtual void PushMessage(string routingKey, String queue, object message)
         {
-            LogHelper.Info($"PushMessage,routingKey:{routingKey}");
-            _channel.QueueDeclare(queue: queue,
-                exclusive: false,
-                durable: true,
-                autoDelete: false);
-            string msgJson = JsonConvert.SerializeObject(message);
-            var body = Encoding.UTF8.GetBytes(msgJson);
-            _channel.BasicPublish(exchange: "message",
-                                    routingKey: routingKey,
-                                    basicProperties: null,
-                                    body: body);
+            lock (m_lock)
+            {
+                LogHelper.Info($"PushMessage,routingKey:{routingKey}");
+                _channel.QueueDeclare(queue: queue,
+                    exclusive: false,
+                    durable: true,
+                    autoDelete: false);
+                string msgJson = JsonConvert.SerializeObject(message);
+                var body = Encoding.UTF8.GetBytes(msgJson);
+                _channel.BasicPublish(exchange: "message",
+                                        routingKey: routingKey,
+                                        basicProperties: null,
+                                        body: body);
+            }
         }
     }
 }

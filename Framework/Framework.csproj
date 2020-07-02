@@ -3,9 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.1.35</Version>
-    <Description>1.修改日志路径问题
-2.修改日志缓存时间,并添加日志的线程安全</Description>
+    <Version>1.0.1.36</Version>
+    <Description>1.MQClient客户端线程安全</Description>
     <Authors>Best_Hong</Authors>
     <PackageProjectUrl>https://github.com/BestHYC/CoreFramework.git</PackageProjectUrl>
     <PackageReleaseNotes>1.全局配置扩展
