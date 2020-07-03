@@ -3,8 +3,9 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.1.36</Version>
-    <Description>1.MQClient客户端线程安全</Description>
+    <Version>1.0.1.39</Version>
+    <Description>1.日志添加稍许扩展
+2.添加Json全局转换</Description>
     <Authors>Best_Hong</Authors>
     <PackageProjectUrl>https://github.com/BestHYC/CoreFramework.git</PackageProjectUrl>
     <PackageReleaseNotes>1.全局配置扩展
@@ -12,8 +13,8 @@
 3.锁的基本使用方式
 4.统一权限配置
 5.基于表达式树的AutoMapper自己实现方式</PackageReleaseNotes>
-    <AssemblyVersion>1.0.1.26</AssemblyVersion>
-    <FileVersion>1.0.1.26</FileVersion>
+    <AssemblyVersion>1.0.1.37</AssemblyVersion>
+    <FileVersion>1.0.1.37</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

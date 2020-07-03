@@ -38,8 +38,9 @@ namespace Framework
                 sb.AppendLine("");
                 sb.AppendLine("---------------------------------------------");
                 sb.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                sb.Append("-----|");
+                sb.Append("-|");
                 sb.Append(t.FullName);
+                sb.Append("-|");
                 if (obj == null)
                 {
                     sb.Append("参数为空");
@@ -60,8 +61,9 @@ namespace Framework
                 sb.AppendLine("");
                 sb.AppendLine("---------------------------------------------");
                 sb.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                sb.Append("-----|");
+                sb.Append("-|");
                 sb.Append(t.FullName);
+                sb.Append("-|");
                 if (obj == null)
                 {
                     sb.Append("参数为空");
@@ -73,6 +75,32 @@ namespace Framework
                 sb.Clear();
                 return result;
             }
+        }
+        private String GetString(String name, Object obj)
+        {
+            String str;
+            if (obj != null)
+            {
+                str = $"{name}:数据为{JsonConvert.SerializeObject(obj)}";
+            }
+            else
+            {
+                str = $"{name}:数据为空";
+            }
+            return GetString(str);
+        }
+        private String GetString(String name, String obj)
+        {
+            String str;
+            if (String.IsNullOrWhiteSpace(obj))
+            {
+                str = $"{name}:数据为{obj}";
+            }
+            else
+            {
+                str = $"{name}:数据为空";
+            }
+            return GetString(str);
         }
         /// <summary>
         /// 
@@ -87,6 +115,14 @@ namespace Framework
         {
             m_logger.Info(GetString(obj));
         }
+        public void LogInformation(String name, Object obj)
+        {
+            m_logger.Info(GetString(name, obj));
+        }
+        public void LogInformation(String name, String obj)
+        {
+            m_logger.Info(GetString(name, obj));
+        }
         public void LogWarning(Object obj)
         {
             m_logger.Warn(GetString(obj));
@@ -94,6 +130,14 @@ namespace Framework
         public void LogWarning(String obj)
         {
             m_logger.Warn(GetString(obj));
+        }
+        public void LogWarning(String name, Object obj)
+        {
+            m_logger.Warn(GetString(name, obj));
+        }
+        public void LogWarning(String name, String obj)
+        {
+            m_logger.Warn(GetString(name, obj));
         }
         public void LogTrace(String obj)
         {
@@ -103,13 +147,29 @@ namespace Framework
         {
             m_logger.Trace(GetString(obj));
         }
+        public void LogTrace(String name, Object obj)
+        {
+            m_logger.Trace(GetString(name, obj));
+        }
+        public void LogTrace(String name, String obj)
+        {
+            m_logger.Trace(GetString(name, obj));
+        }
         public void LogError(String obj)
         {
-            m_logger.Warn(GetString(obj));
+            m_logger.Error(GetString(obj));
         }
         public void LogError(Object obj)
         {
-            m_logger.Warn(GetString(obj));
+            m_logger.Error(GetString(obj));
+        }
+        public void LogError(String name, Object obj)
+        {
+            m_logger.Error(GetString(name, obj));
+        }
+        public void LogError(String name, String obj)
+        {
+            m_logger.Error(GetString(name, obj));
         }
         public void LogDebug(String obj)
         {
@@ -119,13 +179,29 @@ namespace Framework
         {
             m_logger.Debug(GetString(obj));
         }
+        public void LogDebug(String name, Object obj)
+        {
+            m_logger.Debug(GetString(name, obj));
+        }
+        public void LogDebug(String name, String obj)
+        {
+            m_logger.Debug(GetString(name, obj));
+        }
         public void LogCritical(Object obj)
         {
-            m_logger.Warn(GetString(obj));
+            m_logger.Error(GetString(obj));
         }
         public void LogCritical(String obj)
         {
-            m_logger.Warn(GetString(obj));
+            m_logger.Error(GetString(obj));
+        }
+        public void LogCritical(String name, Object obj)
+        {
+            m_logger.Error(GetString(name, obj));
+        }
+        public void LogCritical(String name, String obj)
+        {
+            m_logger.Error(GetString(name, obj));
         }
     }
     public class LogHelper
@@ -137,10 +213,7 @@ namespace Framework
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="obj"></param>
-        public static void Info(Object obj)
-        {
-            m_logger.Info(GetString(obj));
-        }
+
         public static void UseNlog()
         {
             m_logger.UseNlog();
@@ -191,9 +264,47 @@ namespace Framework
                 return result;
             }
         }
+        private static String GetString(String name, Object obj)
+        {
+            String str;
+            if (obj != null)
+            {
+                str = $"{name}:数据为{JsonConvert.SerializeObject(obj)}";
+            }
+            else
+            {
+                str = $"{name}:数据为空";
+            }
+            return GetString(str);
+        }
+        private static String GetString(String name, String obj)
+        {
+            String str;
+            if (String.IsNullOrWhiteSpace(obj))
+            {
+                str = $"{name}:数据为{obj}";
+            }
+            else
+            {
+                str = $"{name}:数据为空";
+            }
+            return GetString(str);
+        }
+        public static void Info(Object obj)
+        {
+            m_logger.Info(GetString(obj));
+        }
         public static void Info(String obj)
         {
             m_logger.Info(GetString(obj));
+        }
+        public static void Info(String name, Object obj)
+        {
+            m_logger.Info(GetString(name, obj));
+        }
+        public static void Info(String name, String obj)
+        {
+            m_logger.Info(GetString(name, obj));
         }
         public static void Warn(Object obj)
         {
@@ -203,6 +314,14 @@ namespace Framework
         {
             m_logger.Warn(GetString(obj));
         }
+        public static void Warn(String name, Object obj)
+        {
+            m_logger.Warn(GetString(name, obj));
+        }
+        public static void Warn(String name, String obj)
+        {
+            m_logger.Warn(GetString(name, obj));
+        }
         public static void Trace(Object obj)
         {
             m_logger.Trace(GetString(obj));
@@ -211,13 +330,29 @@ namespace Framework
         {
             m_logger.Trace(GetString(obj));
         }
+        public static void Trace(String name, Object obj)
+        {
+            m_logger.Trace(GetString(name, obj));
+        }
+        public static void Trace(String name, String obj)
+        {
+            m_logger.Trace(GetString(name, obj));
+        }
         public static void Error(Object obj)
         {
-            m_logger.Warn(GetString(obj));
+            m_logger.Error(GetString(obj));
         }
         public static void Error(String obj)
         {
-            m_logger.Warn(GetString(obj));
+            m_logger.Error(GetString(obj));
+        }
+        public static void Error(String name, Object obj)
+        {
+            m_logger.Error(GetString(name, obj));
+        }
+        public static void Error(String name, String obj)
+        {
+            m_logger.Error(GetString(name, obj));
         }
         public static void Debug(Object obj)
         {
@@ -227,13 +362,29 @@ namespace Framework
         {
             m_logger.Debug(GetString(obj));
         }
+        public static void Debug(String name, Object obj)
+        {
+            m_logger.Debug(GetString(name, obj));
+        }
+        public static void Debug(String name, String obj)
+        {
+            m_logger.Debug(GetString(name, obj));
+        }
         public static void Critical(String obj)
         {
-            m_logger.Warn(GetString(obj));
+            m_logger.Error(GetString(obj));
         }
         public static void Critical(Object obj)
         {
-            m_logger.Warn(GetString(obj));
+            m_logger.Error(GetString(obj));
+        }
+        public static void Critical(String name, Object obj)
+        {
+            m_logger.Error(GetString(name, obj));
+        }
+        public static void Critical(String name, String obj)
+        {
+            m_logger.Error(GetString(name, obj));
         }
     }
 }
