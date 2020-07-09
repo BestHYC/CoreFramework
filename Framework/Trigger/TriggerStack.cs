@@ -58,24 +58,6 @@ namespace Framework
                 return m_list.Count;
             }
         }
-        public static ITriggerExecute Pop()
-        {
-            lock (m_lock)
-            {
-                try
-                {
-                    var item = m_list.Dequeue();
-                    String id = item.GetId();
-                    m_ids.Remove(id);
-                    return item;
-                }
-                catch (Exception e)
-                {
-                    LogHelper.Warn($"插入触发器报错,报错数据为{e.Message}");
-                }
-                return null;
-            }
-        }
         public static void Remove(ITriggerExecute item)
         {
             lock (m_lock)
@@ -83,6 +65,24 @@ namespace Framework
                 try
                 {
                     String id = item.GetId();
+                    if (String.IsNullOrWhiteSpace(id)) return;
+                    if (m_ids.Contains(id))
+                    {
+                        m_ids.Remove(id);
+                    }
+                }
+                catch (Exception e)
+                {
+                    LogHelper.Warn($"插入触发器报错,报错数据为{e.Message}");
+                }
+            }
+        }
+        public static void Remove(String id)
+        {
+            lock (m_lock)
+            {
+                try
+                {
                     if (String.IsNullOrWhiteSpace(id)) return;
                     if (m_ids.Contains(id))
                     {

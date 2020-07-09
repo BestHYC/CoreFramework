@@ -39,22 +39,15 @@ namespace Framework
             DateTime date = DateTime.Now;
             Queue<ITriggerExecute> all = TriggerStack.GetAll();
             Int32 count = all.Count;
-            while (count != 0)
+            while (Volatile.Read(ref count) > 0)
             {
                 try
                 {
                     if (all.Count == 0)
                     {
                         //超时直接丢弃
-                        if (DateTime.Now > date)
-                        {
-                            break;
-                        }
-                        else
-                        {
-                            Thread.Sleep(10);
-                            continue;
-                        }
+                        Thread.Sleep(10);
+                        continue;
                     }
                     //开启线程超过2个,那么就等10ms重新循环,避免始终执行线程操作
                     //注意,这里会出现如果队列只剩2个数据时候,会在第二次执行
@@ -63,11 +56,10 @@ namespace Framework
                     var item = all.Dequeue();
                     String str = item.GetId();
                     date = DateTime.Now.AddSeconds(10);
-                    if (String.IsNullOrWhiteSpace(str) || m_ids.Contains(str))
+                    if (String.IsNullOrWhiteSpace(str) || !TryAdd(str))
                     {
                         continue;
                     }
-                    m_ids.Add(str);
                     Task.Run(() =>
                     {
                         ExecuteTrigger(item);
@@ -81,7 +73,7 @@ namespace Framework
                     //那么会被丢弃并且记录日志
                     //如果所有线程执行完毕后,就继续执行下一笔数据
                     //Warn,如果所有的数据都丢失,那么会产生大量的后台线程执行
-                    while (Volatile.Read(ref num) == 0)
+                    while (Volatile.Read(ref num) <= 0)
                     {
                         if (DateTime.Now < date)
                         {
@@ -90,7 +82,7 @@ namespace Framework
                         else
                         {
                             Volatile.Write(ref num, 1);
-                            LogHelper.Critical(m_ids.Aggregate((i1, i2) => i1 + i2));
+                            LogHelper.Critical($"TimeTrigger执行出现10s超时异常:{m_ids.Aggregate((i1, i2) => $"{i1}-{i2}")}");
                         }
                     }
                 }
@@ -99,6 +91,7 @@ namespace Framework
                     LogHelper.Warn($"定时任务出现错误{e.Message}");
                 }
             }
+            RemoveAll();
             m_timer.Change(1000 * 1, Timeout.Infinite);
         }
         private void ExecuteTrigger(ITriggerExecute trigger)
@@ -121,7 +114,36 @@ namespace Framework
             finally
             {
                 String id = trigger.GetId();
-                m_ids.Remove(id);
+                Remove(id);
+            }
+        }
+        private Object m_lock = new object();
+        private void Remove(String id)
+        {
+            lock (m_lock)
+            {
+                if (String.IsNullOrWhiteSpace(id)) return;
+                if (m_ids.Contains(id))
+                {
+                    m_ids.Remove(id);
+                }
+            }
+        }
+        private void RemoveAll()
+        {
+            lock (m_lock)
+            {
+                m_ids.Clear();
+            }
+        }
+        private Boolean TryAdd(String id)
+        {
+            lock (m_lock)
+            {
+                if (String.IsNullOrWhiteSpace(id)) return false;
+                if (m_ids.Contains(id)) return false;
+                m_ids.Add(id);
+                return true;
             }
         }
         public Task StopAsync(CancellationToken cancellationToken)
