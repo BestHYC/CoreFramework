@@ -10,7 +10,7 @@ namespace Framework
         
         static void Main(string[] args)
         {
-            //LogHelper.UseNlog();
+            LogHelper.Debug("xxxxxx");
             Console.WriteLine("Hello World!       " +DateTime.Now.ToString("YYYYMMDDHHmmSS"));
             Console.ReadLine();
         }

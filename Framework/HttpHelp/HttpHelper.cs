@@ -55,6 +55,7 @@ namespace Framework
             postData = postData ?? "";
             using (HttpClient client = new HttpClient())
             {
+                client.Timeout = TimeSpan.FromSeconds(timeOut);
                 if (headers != null)
                 {
                     foreach (var header in headers)

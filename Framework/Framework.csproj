@@ -3,9 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.1.40</Version>
-    <Description>1.日志添加稍许扩展
-2.添加Json全局转换</Description>
+    <Version>1.0.1.42</Version>
+    <Description>1.添加日志文件夹</Description>
     <Authors>Best_Hong</Authors>
     <PackageProjectUrl>https://github.com/BestHYC/CoreFramework.git</PackageProjectUrl>
     <PackageReleaseNotes>1.全局配置扩展
