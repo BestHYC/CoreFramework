@@ -13,94 +13,18 @@ namespace Framework
     /// 日志扩展
     /// 注意此处只有3个日志 warning日志,Infomation日志 及 all日志
     /// </summary>
-    public class LogHelper<T>
+    public class LogHelper<T>:BaseLogger
     {
-        private static SealedLogger m_logger;
-        private static Type t = typeof(T);
+        private static String m_name = typeof(T).Name;
         public static LogHelper<T> Instance = new LogHelper<T>();
-        private StringBuilder sb = new StringBuilder();
-        private String m_path;
-        private LogHelper() 
+        private LogHelper()
         {
-            m_path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
-            m_logger = new SealedLogger();
+
         }
-        private Object m_lock = new object();
-        public static void UseNlog()
+        private String GetName(String name = null)
         {
-            m_logger.UseNlog();
-        }
-        private String GetString(Object obj)
-        {
-            lock (m_lock)
-            {
-                String result = String.Empty;
-                sb.AppendLine("");
-                sb.AppendLine("---------------------------------------------");
-                sb.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                sb.Append("-|");
-                sb.Append(t.FullName);
-                sb.Append("-|");
-                if (obj == null)
-                {
-                    sb.Append("参数为空");
-                    result = sb.ToString();
-                    sb.Clear();
-                    return result;
-                }
-                result = sb.Append(JsonConvert.SerializeObject(obj)).ToString();
-                sb.Clear();
-                return result;
-            }
-        }
-        private String GetString(String obj)
-        {
-            lock (m_lock)
-            {
-                String result = String.Empty;
-                sb.AppendLine("");
-                sb.AppendLine("---------------------------------------------");
-                sb.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                sb.Append("-|");
-                sb.Append(t.FullName);
-                sb.Append("-|");
-                if (obj == null)
-                {
-                    sb.Append("参数为空");
-                    result = sb.ToString();
-                    sb.Clear();
-                    return result;
-                }
-                result = sb.Append(obj).ToString();
-                sb.Clear();
-                return result;
-            }
-        }
-        private String GetString(String name, Object obj)
-        {
-            String str;
-            if (obj != null)
-            {
-                str = $"{name}:数据为{JsonConvert.SerializeObject(obj)}";
-            }
-            else
-            {
-                str = $"{name}:数据为空";
-            }
-            return GetString(str);
-        }
-        private String GetString(String name, String obj)
-        {
-            String str;
-            if (String.IsNullOrWhiteSpace(obj))
-            {
-                str = $"{name}:数据为{obj}";
-            }
-            else
-            {
-                str = $"{name}:数据为空";
-            }
-            return GetString(str);
+            if (String.IsNullOrEmpty(name)) return $"---类型{m_name}--";
+            return $"---类型{m_name}--{name}";
         }
         /// <summary>
         /// 
@@ -109,187 +33,103 @@ namespace Framework
         /// <param name="obj"></param>
         public void LogInformation(Object obj)
         {
-            m_logger.Info(GetString(obj));
+            m_logger.Info(GetString(GetName(), obj));
         }
         public void LogInformation(String obj)
         {
-            m_logger.Info(GetString(obj));
+            m_logger.Info(GetString(GetName(), obj));
         }
         public void LogInformation(String name, Object obj)
         {
-            m_logger.Info(GetString(name, obj));
+            m_logger.Info(GetString(GetName(name), obj));
         }
         public void LogInformation(String name, String obj)
         {
-            m_logger.Info(GetString(name, obj));
+            m_logger.Info(GetString(GetName(name), obj));
         }
         public void LogWarning(Object obj)
         {
-            m_logger.Warn(GetString(obj));
+            m_logger.Warn(GetString(GetName(), obj));
         }
         public void LogWarning(String obj)
         {
-            m_logger.Warn(GetString(obj));
+            m_logger.Warn(GetString(GetName(), obj));
         }
         public void LogWarning(String name, Object obj)
         {
-            m_logger.Warn(GetString(name, obj));
+            m_logger.Warn(GetString(GetName(name), obj));
         }
         public void LogWarning(String name, String obj)
         {
-            m_logger.Warn(GetString(name, obj));
+            m_logger.Warn(GetString(GetName(name), obj));
         }
         public void LogTrace(String obj)
         {
-            m_logger.Trace(GetString(obj));
+            m_logger.Trace(GetString(GetName(), obj));
         }
         public void LogTrace(Object obj)
         {
-            m_logger.Trace(GetString(obj));
+            m_logger.Trace(GetString(GetName(), obj));
         }
         public void LogTrace(String name, Object obj)
         {
-            m_logger.Trace(GetString(name, obj));
+            m_logger.Trace(GetString(GetName(name), obj));
         }
         public void LogTrace(String name, String obj)
         {
-            m_logger.Trace(GetString(name, obj));
+            m_logger.Trace(GetString(GetName(name), obj));
         }
         public void LogError(String obj)
         {
-            m_logger.Error(GetString(obj));
+            m_logger.Error(GetString(GetName(), obj));
         }
         public void LogError(Object obj)
         {
-            m_logger.Error(GetString(obj));
+            m_logger.Error(GetString(GetName(), obj));
         }
         public void LogError(String name, Object obj)
         {
-            m_logger.Error(GetString(name, obj));
+            m_logger.Error(GetString(GetName(name), obj));
         }
         public void LogError(String name, String obj)
         {
-            m_logger.Error(GetString(name, obj));
+            m_logger.Error(GetString(GetName(name), obj));
         }
         public void LogDebug(String obj)
         {
-            m_logger.Debug(GetString(obj));
+            m_logger.Debug(GetString(GetName(), obj));
         }
         public void LogDebug(Object obj)
         {
-            m_logger.Debug(GetString(obj));
+            m_logger.Debug(GetString(GetName(), obj));
         }
         public void LogDebug(String name, Object obj)
         {
-            m_logger.Debug(GetString(name, obj));
+            m_logger.Debug(GetString(GetName(name), obj));
         }
         public void LogDebug(String name, String obj)
         {
-            m_logger.Debug(GetString(name, obj));
+            m_logger.Debug(GetString(GetName(name), obj));
         }
         public void LogCritical(Object obj)
         {
-            m_logger.Error(GetString(obj));
+            m_logger.Error(GetString(GetName(), obj));
         }
         public void LogCritical(String obj)
         {
-            m_logger.Error(GetString(obj));
+            m_logger.Error(GetString(GetName(), obj));
         }
         public void LogCritical(String name, Object obj)
         {
-            m_logger.Error(GetString(name, obj));
+            m_logger.Error(GetString(GetName(name), obj));
         }
         public void LogCritical(String name, String obj)
         {
-            m_logger.Error(GetString(name, obj));
+            m_logger.Error(GetString(GetName(name), obj));
         }
     }
-    public class LogHelper
+    public class LogHelper : BaseLogger
     {
-        private static readonly SealedLogger m_logger = new SealedLogger();
-        private static StringBuilder sb = new StringBuilder();
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="obj"></param>
-
-        public static void UseNlog()
-        {
-            m_logger.UseNlog();
-        }
-        private static Object m_lock = new object();
-        private static String GetString(Object obj)
-        {
-            lock (m_lock)
-            {
-                String result = string.Empty;
-                sb.AppendLine("");
-                sb.AppendLine("---------------------------------------------");
-                sb.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                sb.Append("-----|");
-                if (obj == null)
-                {
-                    sb.Append("参数为空");
-                    result = sb.ToString();
-                    sb.Clear();
-                    return result;
-                }
-                sb.Append(JsonConvert.SerializeObject(obj));
-                result = sb.ToString();
-                sb.Clear();
-                return result;
-            }
-            
-        }
-        private static String GetString(String obj)
-        {
-            lock (m_lock)
-            {
-                String result = string.Empty;
-                sb.AppendLine("");
-                sb.AppendLine("---------------------------------------------");
-                sb.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                sb.Append("-----|");
-                if (String.IsNullOrEmpty(obj))
-                {
-                    sb.Append("参数为空");
-                    result = sb.ToString();
-                    sb.Clear();
-                    return result;
-                }
-                sb.Append(obj);
-                result = sb.ToString();
-                sb.Clear();
-                return result;
-            }
-        }
-        private static String GetString(String name, Object obj)
-        {
-            String str;
-            if (obj != null)
-            {
-                str = $"{name}:数据为{JsonConvert.SerializeObject(obj)}";
-            }
-            else
-            {
-                str = $"{name}:数据为空";
-            }
-            return GetString(str);
-        }
-        private static String GetString(String name, String obj)
-        {
-            String str;
-            if (String.IsNullOrWhiteSpace(obj))
-            {
-                str = $"{name}:数据为{obj}";
-            }
-            else
-            {
-                str = $"{name}:数据为空";
-            }
-            return GetString(str);
-        }
         public static void Info(Object obj)
         {
             m_logger.Info(GetString(obj));
@@ -385,6 +225,86 @@ namespace Framework
         public static void Critical(String name, String obj)
         {
             m_logger.Error(GetString(name, obj));
+        }
+    }
+    public class BaseLogger
+    {
+        protected static SealedLogger m_logger = new SealedLogger();
+        public static void UseNlog()
+        {
+            m_logger.UseNlog();
+        }
+        private static Object m_lock = new object();
+        private static StringBuilder sb = new StringBuilder();
+        protected static String GetString(Object obj)
+        {
+            lock (m_lock)
+            {
+                String result = string.Empty;
+                sb.AppendLine("");
+                sb.AppendLine("---------------------------------------------");
+                sb.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                sb.Append("-----|");
+                if (obj == null)
+                {
+                    sb.Append("参数为空");
+                }
+                else
+                {
+                    sb.Append(JsonConvert.SerializeObject(obj));
+                }
+                result = sb.ToString();
+                sb.Clear();
+                return result;
+            }
+        }
+        protected static String GetString(String obj)
+        {
+            lock (m_lock)
+            {
+                String result = string.Empty;
+                sb.AppendLine("");
+                sb.AppendLine("---------------------------------------------");
+                sb.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                sb.Append("-----|----");
+                if (String.IsNullOrEmpty(obj))
+                {
+                    sb.Append("参数为空");
+                }
+                else
+                {
+                    sb.Append(obj);
+                }
+                result = sb.ToString();
+                sb.Clear();
+                return result;
+            }
+        }
+        protected static String GetString(String name, Object obj)
+        {
+            String str;
+            if (obj != null)
+            {
+                str = $"{name}----数据为----{JsonConvert.SerializeObject(obj)}";
+            }
+            else
+            {
+                str = $"{name}----数据为空";
+            }
+            return GetString(str);
+        }
+        protected static String GetString(String name, String obj)
+        {
+            String str;
+            if (!String.IsNullOrWhiteSpace(obj))
+            {
+                str = $"{name}----数据为----{obj}";
+            }
+            else
+            {
+                str = $"{name}----数据为空";
+            }
+            return GetString(str);
         }
     }
 }

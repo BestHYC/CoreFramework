@@ -14,21 +14,7 @@ namespace Framework
         private Logger m_logger;
         private Boolean m_isNlog = false;
         /// <summary>
-        /// 所有的状态分为2种
-        /// 锁的状态<10时候使用sb_*_0
-        /// 锁的状态>=10 < 20使用sb_*_1(此处可以>9既可)
-        /// 
-        /// 当从sb_*_0切换到sb_*_1时,有一个临界状态,此时正在切换,但是在AppendLine没有结束,
-        /// 那么出现sb.ToString()时候出现临时性错误,即ToString()没有把当前的数据写入
-        /// 所以 当 lock < 10 时候直接进入 sb_*_1的类型
-        /// 进入后做循环处理判断是否为11,如果是11 说明是线程在定时器中在进行ToString()操作
-        /// 换个说法
-        /// 在lock 在 1--(01)的时候,说明是在sb_*_0 写入的状态 0 说明sb_*_0不在写入
-        /// 在lock 在 11的时候,说明是在sb_*_1 写入的状态 10 说明sb_*_1不在写入
-        /// 
-        /// 结果:
-        /// 当sb_*_0转为String时候,得 >=10 且不为 1
-        /// 当sb_*_1转为String时候,得 <=9 且不为 11
+        /// 所有锁分为2个状态
         /// </summary>
         private Int32 lock_Warn = 0;
         private Int32 lock_Info = 0;
@@ -82,21 +68,30 @@ namespace Framework
                     String critical = String.Empty;
                     if (Interlocked.CompareExchange(ref lock_Critical, 1, 0) == 0)
                     {
-                        while (Interlocked.CompareExchange(ref lock_Critical_0, 1, 0) == 0)
+                        while (true)
                         {
-
-                            critical = sb_Critical_0.ToString();
-                            sb_Critical_0.Clear();
+                            if (Interlocked.CompareExchange(ref lock_Critical_0, 1, 0) == 0)
+                            {
+                                break;
+                            }
+                            Thread.Sleep(1);
                         }
+                        critical = sb_Critical_0.ToString();
+                        sb_Critical_0.Clear();
                         Volatile.Write(ref lock_Critical_0, 0);
                     }
                     else if (Interlocked.CompareExchange(ref lock_Critical, 0, 1) == 1)
                     {
-                        while (Interlocked.CompareExchange(ref lock_Critical_1, 1, 0) == 0)
+                        while (true)
                         {
-                            critical = sb_Critical_1.ToString();
-                            sb_Critical_1.Clear();
+                            if (Interlocked.CompareExchange(ref lock_Critical_1, 1, 0) == 0)
+                            {
+                                break;
+                            }
+                            Thread.Sleep(1);
                         }
+                        critical = sb_Critical_1.ToString();
+                        sb_Critical_1.Clear();
                         Volatile.Write(ref lock_Critical_1, 0);
                     }
                     if (m_isNlog)
@@ -117,20 +112,30 @@ namespace Framework
                     String Debug = String.Empty;
                     if (Interlocked.CompareExchange(ref lock_Debug, 1, 0) == 0)
                     {
-                        while (Interlocked.CompareExchange(ref lock_Debug_0, 1, 0) == 0)
+                        while (true)
                         {
-                            Debug = sb_Debug_0.ToString();
-                            sb_Debug_0.Clear();
+                            if (Interlocked.CompareExchange(ref lock_Debug_0, 1, 0) == 0)
+                            {
+                                break;
+                            }
+                            Thread.Sleep(1);
                         }
+                        Debug = sb_Debug_0.ToString();
+                        sb_Debug_0.Clear();
                         Volatile.Write(ref lock_Debug_0, 0);
                     }
                     else if (Interlocked.CompareExchange(ref lock_Debug, 0, 1) == 1)
                     {
-                        while (Interlocked.CompareExchange(ref lock_Debug_1, 1, 0) == 0)
+                        while (true)
                         {
-                            Debug = sb_Debug_1.ToString();
-                            sb_Debug_1.Clear();
+                            if (Interlocked.CompareExchange(ref lock_Debug_1, 1, 0) == 0)
+                            {
+                                break;
+                            }
+                            Thread.Sleep(1);
                         }
+                        Debug = sb_Debug_1.ToString();
+                        sb_Debug_1.Clear();
                         Volatile.Write(ref lock_Debug_1, 0);
                     }
                     if (m_isNlog)
@@ -151,20 +156,30 @@ namespace Framework
                     String Error = String.Empty;
                     if (Interlocked.CompareExchange(ref lock_Error, 1, 0) == 0)
                     {
-                        while (Interlocked.CompareExchange(ref lock_Error_0, 1, 0) == 0)
+                        while (true)
                         {
-                            Error = sb_Error_0.ToString();
-                            sb_Error_0.Clear();
+                            if (Interlocked.CompareExchange(ref lock_Error_0, 1, 0) == 0)
+                            {
+                                break;
+                            }
+                            Thread.Sleep(1);
                         }
+                        Error = sb_Error_0.ToString();
+                        sb_Error_0.Clear();
                         Volatile.Write(ref lock_Error_0, 0);
                     }
                     else if (Interlocked.CompareExchange(ref lock_Error, 0, 1) == 1)
                     {
-                        while (Interlocked.CompareExchange(ref lock_Error_1, 1, 0) == 0)
+                        while (true)
                         {
-                            Error = sb_Error_1.ToString();
-                            sb_Error_1.Clear();
+                            if (Interlocked.CompareExchange(ref lock_Error_1, 1, 0) == 0)
+                            {
+                                break;
+                            }
+                            Thread.Sleep(1);
                         }
+                        Error = sb_Error_1.ToString();
+                        sb_Error_1.Clear();
                         Volatile.Write(ref lock_Error_1, 0);
                     }
                     if (m_isNlog)
@@ -185,20 +200,30 @@ namespace Framework
                     String Info = String.Empty;
                     if (Interlocked.CompareExchange(ref lock_Info, 1, 0) == 0)
                     {
-                        while (Interlocked.CompareExchange(ref lock_Info_0, 1, 0) == 0)
+                        while (true)
                         {
-                            Info = sb_Info_0.ToString();
-                            sb_Info_0.Clear();
+                            if (Interlocked.CompareExchange(ref lock_Info_0, 1, 0) == 0)
+                            {
+                                break;
+                            }
+                            Thread.Sleep(1);
                         }
+                        Info = sb_Info_0.ToString();
+                        sb_Info_0.Clear();
                         Volatile.Write(ref lock_Info_0, 0);
                     }
                     else if (Interlocked.CompareExchange(ref lock_Info, 0, 1) == 1)
                     {
-                        while (Interlocked.CompareExchange(ref lock_Info_1, 1, 0) == 0)
+                        while (true)
                         {
-                            Info = sb_Info_1.ToString();
-                            sb_Info_1.Clear();
+                            if (Interlocked.CompareExchange(ref lock_Info_1, 1, 0) == 0)
+                            {
+                                break;
+                            }
+                            Thread.Sleep(1);
                         }
+                        Info = sb_Info_1.ToString();
+                        sb_Info_1.Clear();
                         Volatile.Write(ref lock_Info_1, 0);
                     }
                     if (m_isNlog)
@@ -219,20 +244,30 @@ namespace Framework
                     String Trace = String.Empty;
                     if (Interlocked.CompareExchange(ref lock_Trace, 1, 0) == 0)
                     {
-                        while (Interlocked.CompareExchange(ref lock_Trace_0, 1, 0) == 0)
+                        while (true)
                         {
-                            Trace = sb_Trace_0.ToString();
-                            sb_Trace_0.Clear();
+                            if (Interlocked.CompareExchange(ref lock_Trace_0, 1, 0) == 0)
+                            {
+                                break;
+                            }
+                            Thread.Sleep(1);
                         }
+                        Trace = sb_Trace_0.ToString();
+                        sb_Trace_0.Clear();
                         Volatile.Write(ref lock_Trace_0, 0);
                     }
                     else if (Interlocked.CompareExchange(ref lock_Trace, 0, 1) == 1)
                     {
-                        while (Interlocked.CompareExchange(ref lock_Trace_1, 1, 0) == 0)
+                        while (true)
                         {
-                            Trace = sb_Trace_1.ToString();
-                            sb_Trace_1.Clear();
+                            if (Interlocked.CompareExchange(ref lock_Trace_1, 1, 0) == 0)
+                            {
+                                break;
+                            }
+                            Thread.Sleep(1);
                         }
+                        Trace = sb_Trace_1.ToString();
+                        sb_Trace_1.Clear();
                         Volatile.Write(ref lock_Trace_1, 0);
                     }
                     if (m_isNlog)
@@ -254,20 +289,30 @@ namespace Framework
                     String Warn = String.Empty;
                     if (Interlocked.CompareExchange(ref lock_Warn, 1, 0) == 0)
                     {
-                        while (Interlocked.CompareExchange(ref lock_Warn_0, 1, 0) == 0)
+                        while (true)
                         {
-                            Warn = sb_Warn_0.ToString();
-                            sb_Warn_0.Clear();
+                            if (Interlocked.CompareExchange(ref lock_Warn_0, 1, 0) == 0)
+                            {
+                                break;
+                            }
+                            Thread.Sleep(1);
                         }
+                        Warn = sb_Warn_0.ToString();
+                        sb_Warn_0.Clear();
                         Volatile.Write(ref lock_Warn_0, 0);
                     }
                     else if (Interlocked.CompareExchange(ref lock_Warn, 0, 1) == 1)
                     {
-                        while (Interlocked.CompareExchange(ref lock_Warn_1, 1, 0) == 0)
+                        while (true)
                         {
-                            Warn = sb_Warn_1.ToString();
-                            sb_Warn_1.Clear();
+                            if (Interlocked.CompareExchange(ref lock_Warn_1, 1, 0) == 0)
+                            {
+                                break;
+                            }
+                            Thread.Sleep(1);
                         }
+                        Warn = sb_Warn_1.ToString();
+                        sb_Warn_1.Clear();
                         Volatile.Write(ref lock_Warn_1, 0);
                     }
                     sb_all.AppendLine(Warn);
@@ -330,18 +375,28 @@ namespace Framework
             if (String.IsNullOrEmpty(message)) message = "";
             if (Volatile.Read(ref lock_Info) == 0)
             {
-                while (Interlocked.CompareExchange(ref lock_Info_0, 1, 0) == 0)
+                while (true)
                 {
-                    sb_Info_0.AppendLine(message);
+                    if(Interlocked.CompareExchange(ref lock_Info_0, 1, 0) == 0)
+                    {
+                        break;
+                    }
+                    Thread.Sleep(1);
                 }
+                sb_Info_0.AppendLine(message);
                 Volatile.Write(ref lock_Info_0, 0);
             }
             else
             {
-                while (Interlocked.CompareExchange(ref lock_Info_1, 1, 0) == 0)
+                while (true)
                 {
-                    sb_Info_1.AppendLine(message);
+                    if (Interlocked.CompareExchange(ref lock_Info_1, 1, 0) == 0)
+                    {
+                        break;
+                    }
+                    Thread.Sleep(1);
                 }
+                sb_Info_1.AppendLine(message);
                 Volatile.Write(ref lock_Info_1, 0);
             }
         }
@@ -350,18 +405,28 @@ namespace Framework
             if (String.IsNullOrEmpty(message)) message = "";
             if (Volatile.Read(ref lock_Warn) == 0)
             {
-                while (Interlocked.CompareExchange(ref lock_Warn_0, 1, 0) == 0)
+                while (true)
                 {
-                    sb_Warn_0.AppendLine(message);
+                    if (Interlocked.CompareExchange(ref lock_Warn_0, 1, 0) == 0)
+                    {
+                        break;
+                    }
+                    Thread.Sleep(1);
                 }
+                sb_Warn_0.AppendLine(message);
                 Volatile.Write(ref lock_Warn_0, 0);
             }
             else
             {
-                while (Interlocked.CompareExchange(ref lock_Warn_1, 1, 0) == 0)
+                while (true)
                 {
-                    sb_Warn_1.AppendLine(message);
+                    if (Interlocked.CompareExchange(ref lock_Warn_1, 1, 0) == 0)
+                    {
+                        break;
+                    }
+                    Thread.Sleep(1);
                 }
+                sb_Warn_1.AppendLine(message);
                 Volatile.Write(ref lock_Warn_1, 0);
             }
         }
@@ -370,18 +435,28 @@ namespace Framework
             if (String.IsNullOrEmpty(message)) message = "";
             if (Volatile.Read(ref lock_Trace) == 0)
             {
-                while (Interlocked.CompareExchange(ref lock_Trace_0, 1, 0) == 0)
+                while (true)
                 {
-                    sb_Trace_0.AppendLine(message);
+                    if (Interlocked.CompareExchange(ref lock_Trace_0, 1, 0) == 0)
+                    {
+                        break;
+                    }
+                    Thread.Sleep(1);
                 }
+                sb_Trace_0.AppendLine(message);
                 Volatile.Write(ref lock_Trace_0, 0);
             }
             else
             {
-                while (Interlocked.CompareExchange(ref lock_Trace_1, 1, 0) == 0)
+                while (true)
                 {
-                    sb_Trace_1.AppendLine(message);
+                    if (Interlocked.CompareExchange(ref lock_Trace_1, 1, 0) == 0)
+                    {
+                        break;
+                    }
+                    Thread.Sleep(1);
                 }
+                sb_Trace_1.AppendLine(message);
                 Volatile.Write(ref lock_Trace_1, 0);
             }
         }
@@ -390,18 +465,28 @@ namespace Framework
             if (String.IsNullOrEmpty(message)) message = "";
             if (Volatile.Read(ref lock_Debug) == 0)
             {
-                while (Interlocked.CompareExchange(ref lock_Debug_0, 1, 0) == 0)
+                while (true)
                 {
-                    sb_Debug_0.AppendLine(message);
+                    if (Interlocked.CompareExchange(ref lock_Debug_0, 1, 0) == 0)
+                    {
+                        break;
+                    }
+                    Thread.Sleep(1);
                 }
+                sb_Debug_0.AppendLine(message);
                 Volatile.Write(ref lock_Debug_0, 0);
             }
             else
             {
-                while (Interlocked.CompareExchange(ref lock_Debug_1, 1, 0) == 0)
+                while (true)
                 {
-                    sb_Debug_1.AppendLine(message);
+                    if (Interlocked.CompareExchange(ref lock_Debug_1, 1, 0) == 0)
+                    {
+                        break;
+                    }
+                    Thread.Sleep(1);
                 }
+                sb_Debug_1.AppendLine(message);
                 Volatile.Write(ref lock_Debug_1, 0);
             }
         }
@@ -410,18 +495,28 @@ namespace Framework
             if (String.IsNullOrEmpty(message)) message = "";
             if (Volatile.Read(ref lock_Error) == 0)
             {
-                while (Interlocked.CompareExchange(ref lock_Error_0, 1, 0) == 0)
+                while (true)
                 {
-                    sb_Error_0.AppendLine(message);
+                    if (Interlocked.CompareExchange(ref lock_Error_0, 1, 0) == 0)
+                    {
+                        break;
+                    }
+                    Thread.Sleep(1);
                 }
+                sb_Error_0.AppendLine(message);
                 Volatile.Write(ref lock_Error_0, 0);
             }
             else
             {
-                while (Interlocked.CompareExchange(ref lock_Error_1, 1, 0) == 0)
+                while (true)
                 {
-                    sb_Error_1.AppendLine(message);
+                    if (Interlocked.CompareExchange(ref lock_Error_1, 1, 0) == 0)
+                    {
+                        break;
+                    }
+                    Thread.Sleep(1);
                 }
+                sb_Error_1.AppendLine(message);
                 Volatile.Write(ref lock_Error_1, 0);
             }
         }
@@ -430,18 +525,28 @@ namespace Framework
             if (String.IsNullOrEmpty(message)) message = "";
             if (Volatile.Read(ref lock_Critical) == 0)
             {
-                while (Interlocked.CompareExchange(ref lock_Critical_0, 1, 0) == 0)
+                while (true)
                 {
-                    sb_Critical_0.AppendLine(message);
+                    if (Interlocked.CompareExchange(ref lock_Critical_0, 1, 0) == 0)
+                    {
+                        break;
+                    }
+                    Thread.Sleep(1);
                 }
+                sb_Critical_0.AppendLine(message);
                 Volatile.Write(ref lock_Critical_0, 0);
             }
             else
             {
-                while (Interlocked.CompareExchange(ref lock_Critical_1, 1, 0) == 0)
+                while (true)
                 {
-                    sb_Critical_1.AppendLine(message);
+                    if (Interlocked.CompareExchange(ref lock_Critical_1, 1, 0) == 0)
+                    {
+                        break;
+                    }
+                    Thread.Sleep(1);
                 }
+                sb_Critical_1.AppendLine(message);
                 Volatile.Write(ref lock_Critical_1, 0);
             }
         }
