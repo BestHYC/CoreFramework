@@ -27,8 +27,11 @@ namespace Framework
         public Task StartAsync(CancellationToken cancellationToken)
         {
             m_timer.Change(0, Timeout.Infinite);
+            InitAction?.Invoke();
             return Task.CompletedTask;
         }
+        public static event Action InitAction;
+        public static event Action EndAction;
         /// <summary>
         /// 定时任务执行程序
         /// </summary>
@@ -148,6 +151,7 @@ namespace Framework
         }
         public Task StopAsync(CancellationToken cancellationToken)
         {
+            EndAction?.Invoke();
             return Task.CompletedTask;
         }
     }

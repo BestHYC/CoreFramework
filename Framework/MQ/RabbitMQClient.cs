@@ -38,13 +38,15 @@ namespace Framework
         {
             lock (m_lock)
             {
-                LogHelper.Info($"PushMessage,routingKey:{routingKey}");
+                if (String.IsNullOrWhiteSpace(routingKey) || String.IsNullOrWhiteSpace(queue)) return;
+                if (message == null) return;
+                string msgJson = JsonConvert.SerializeObject(message);
+                var body = Encoding.UTF8.GetBytes(msgJson);
+                LogHelper.Info($"PushMessage,routingKey:{routingKey},Body is {body}");
                 _channel.QueueDeclare(queue: queue,
                     exclusive: false,
                     durable: true,
                     autoDelete: false);
-                string msgJson = JsonConvert.SerializeObject(message);
-                var body = Encoding.UTF8.GetBytes(msgJson);
                 _channel.BasicPublish(exchange: "message",
                                         routingKey: routingKey,
                                         basicProperties: null,

@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.1.42</Version>
-    <Description>1.添加日志文件夹</Description>
+    <Version>1.0.1.44</Version>
+    <Description>1.添加触发器初始化事件</Description>
     <Authors>Best_Hong</Authors>
     <PackageProjectUrl>https://github.com/BestHYC/CoreFramework.git</PackageProjectUrl>
     <PackageReleaseNotes>1.全局配置扩展
@@ -12,8 +12,8 @@
 3.锁的基本使用方式
 4.统一权限配置
 5.基于表达式树的AutoMapper自己实现方式</PackageReleaseNotes>
-    <AssemblyVersion>1.0.1.37</AssemblyVersion>
-    <FileVersion>1.0.1.37</FileVersion>
+    <AssemblyVersion>1.0.1.43</AssemblyVersion>
+    <FileVersion>1.0.1.43</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
