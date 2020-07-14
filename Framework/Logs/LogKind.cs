@@ -334,8 +334,7 @@ namespace Framework
                     }
                     else
                     {
-                        String path = Path.Combine(m_path, $"nlog-all-{DateTime.Now:yyyy-MM-dd}.log");
-                        File.AppendAllText(path, sb_all.ToString());
+                        ConvertAllToOtherPath(sb_all.ToString());
                     }
                 }
                 #endregion
@@ -349,18 +348,45 @@ namespace Framework
                 m_timer.Change(1000 * 1, Timeout.Infinite);
             }
         }
+        private DateTime m_today = default;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="all"></param>
+        private void ConvertAllToOtherPath(String all)
+        {
+            String path = Path.Combine(m_path, $"alllog.log");
+            if (m_today == default || m_today.Day != DateTime.Now.Day)
+            {
+                m_today = DateTime.Now;
+                if (File.Exists(path))
+                {
+                    FileInfo info = new FileInfo(path);
+                    if (info.CreationTime.Day != m_today.Day)
+                    {
+                        String newPath = GetPath(info.CreationTime, $"nlog-all-{info.CreationTime:yyyy-MM-dd}-{m_today.Minute}-{m_today.Millisecond}.log");
+                        File.Move(path, newPath);
+                    }
+                }
+            }
+            File.AppendAllText(path, all);
+        }
         public void SetPath(String path)
         {
             m_path = path;
         }
-        private string GetPath(String path)
+        private string GetPath(String logname)
         {
-            String dic = Path.Combine(m_path, DateTime.Now.ToString("yyyy-MM-dd"));
+            return GetPath(DateTime.Now, logname);
+        }
+        private String GetPath(DateTime dt , String logname)
+        {
+            String dic = Path.Combine(m_path, dt.ToString("yyyy-MM-dd"));
             if (!Directory.Exists(dic))
             {
                 Directory.CreateDirectory(dic);
             }
-            return Path.Combine(dic, path);
+            return Path.Combine(dic, logname);
         }
         public void UseNlog()
         {
