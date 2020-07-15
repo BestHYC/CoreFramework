@@ -3,9 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.1.46</Version>
-    <Description>1.将mq客户端修改为单列
-2.将mq生产者客户端修改成abstrat</Description>
+    <Version>1.0.1.47</Version>
+    <Description>1.修改触发器在可能额外情况下避免死锁情况</Description>
     <Authors>Best_Hong</Authors>
     <PackageProjectUrl>https://github.com/BestHYC/CoreFramework.git</PackageProjectUrl>
     <PackageReleaseNotes>1.全局配置扩展

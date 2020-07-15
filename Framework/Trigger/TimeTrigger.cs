@@ -57,9 +57,8 @@ namespace Framework
                     //完毕后,有一个线程出现死锁,那么会出现死锁状态丢弃状态
                     Interlocked.Decrement(ref num);
                     var item = all.Dequeue();
-                    String str = item.GetId();
                     date = DateTime.Now.AddSeconds(10);
-                    if (String.IsNullOrWhiteSpace(str) || !TryAdd(str))
+                    if (!TryAdd(item))
                     {
                         continue;
                     }
@@ -92,6 +91,7 @@ namespace Framework
                 catch (Exception e)
                 {
                     LogHelper.Warn($"定时任务出现错误{e.Message}");
+                    Interlocked.Decrement(ref count);
                 }
             }
             RemoveAll();
@@ -139,14 +139,27 @@ namespace Framework
                 m_ids.Clear();
             }
         }
-        private Boolean TryAdd(String id)
+        private Boolean TryAdd(ITriggerExecute trigger)
         {
             lock (m_lock)
             {
-                if (String.IsNullOrWhiteSpace(id)) return false;
-                if (m_ids.Contains(id)) return false;
-                m_ids.Add(id);
-                return true;
+                try
+                {
+                    String id = trigger.GetId();
+                    if (String.IsNullOrWhiteSpace(id)) return false;
+                    if (m_ids.Contains(id))
+                    {
+                        TriggerStack.PushExiested(trigger);
+                        return false;
+                    }
+                    m_ids.Add(id);
+                    return true;
+                }
+                catch(Exception e)
+                {
+                    LogHelper.Error("执行定时任务的TryAdd报错,请查证.错误代码" + e.Message);
+                }
+                return false;
             }
         }
         public Task StopAsync(CancellationToken cancellationToken)
