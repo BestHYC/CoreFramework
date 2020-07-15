@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Framework
 {
-    public class RabbitListener
+    public abstract class RabbitListener
     {
         private readonly IConnection connection;
         private readonly IModel channel;
@@ -46,10 +46,7 @@ namespace Framework
         protected string QueueName;
 
         // 处理消息的方法
-        public virtual bool Process(string message)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract bool Process(string message);
 
         // 注册消费者监听在这里
         public void Register()
