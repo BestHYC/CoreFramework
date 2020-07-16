@@ -7,14 +7,6 @@ namespace Framework
     public interface ITriggerExecute
     {
         /// <summary>
-        /// 下一次执行时间
-        /// </summary>
-        DateTime NextTime { get; set; }
-        /// <summary>
-        /// 当前结束时间
-        /// </summary>
-        DateTime EndTime { get; set; }
-        /// <summary>
         /// 定时执行
         /// </summary>
         /// <param name="serviceProvider"></param>
