@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.1.47</Version>
-    <Description>1.修改触发器在可能额外情况下避免死锁情况</Description>
+    <Version>1.0.1.48</Version>
+    <Description>1.对mq的参数设置进行统一</Description>
     <Authors>Best_Hong</Authors>
     <PackageProjectUrl>https://github.com/BestHYC/CoreFramework.git</PackageProjectUrl>
     <PackageReleaseNotes>1.全局配置扩展

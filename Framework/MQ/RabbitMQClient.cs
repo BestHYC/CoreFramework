@@ -14,43 +14,28 @@ namespace Framework
 
         private readonly IModel _channel;
         private static RabbitMQClient m_instance;
-        private static RabbitConfig m_config;
-        public static void SetConfig(IConfiguration Configuration)
-        {
-            RabbitConfig rabbit = new RabbitConfig()
-            {
-                Host = Configuration.GetSection("RabbitConfig:Host").Value,
-                Password = Configuration.GetSection("RabbitConfig:Password").Value,
-                Port = Int32.Parse(Configuration.GetSection("RabbitConfig:Port").Value),
-                VHost = Configuration.GetSection("RabbitConfig:VHost").Value,
-                UserName = Configuration.GetSection("RabbitConfig:UserName").Value,
-            };
-            m_config = rabbit;
-        }
         public static RabbitMQClient Instance
         {
 
             get
             {
-                if (m_config == null) throw new Exception("MQ无设置启动项,请配置好启动");
                 if(m_instance == null)
                 {
                     lock (m_lock)
                     {
                         if(m_instance == null)
                         {
-                            m_instance = new RabbitMQClient(m_config);
+                            m_instance = new RabbitMQClient();
                         }
                     }
                 }
                 return m_instance;
             }
         }
-        public RabbitMQClient(IOptions<RabbitConfig> option) : this(option.Value)
+        public RabbitMQClient()
         {
-        }
-        public RabbitMQClient(RabbitConfig config)
-        {
+            if (MQRabbitConfig.RabbitConfig == null) throw new Exception("执行MQ参数失败");
+            RabbitConfig config = MQRabbitConfig.RabbitConfig;
             try
             {
                 var factory = new ConnectionFactory()

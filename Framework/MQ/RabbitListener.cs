@@ -12,12 +12,12 @@ namespace Framework
     {
         private readonly IConnection connection;
         private readonly IModel channel;
-
-
-        public RabbitListener(RabbitConfig options)
+        public RabbitListener()
         {
+            if (MQRabbitConfig.RabbitConfig == null) throw new Exception("没设置MQ参数");
             try
             {
+                RabbitConfig options = MQRabbitConfig.RabbitConfig;
                 var factory = new ConnectionFactory()
                 {
                     // 这是我这边的配置,自己改成自己用就好
