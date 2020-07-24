@@ -1,0 +1,6 @@
+
+---------------------------------------------
+2020-07-23 15:36:06-----|----请求https://test.topgate.io/tgpay_exapi/v1/sellc/rates出现错误, 传递的参数是{"timestamp":1595489724},报的异常为One or more errors occurred. (由于连接方在一段时间后没有正确答复或连接的主机没有反应，连接尝试失败。)
+
+---------------------------------------------
+2020-07-23 15:38:49-----|----请求https://test.topgate.io/tgpay_exapi/v1/sellc/rates出现错误, 传递的参数是{"timestamp":1595489886},报的异常为One or more errors occurred. (由于连接方在一段时间后没有正确答复或连接的主机没有反应，连接尝试失败。)
