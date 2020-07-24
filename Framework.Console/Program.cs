@@ -13,32 +13,27 @@ namespace Framework
         
         static void Main(string[] args)
         {
-            HashSet<String> hs = new HashSet<string>();
-            hs.Add("a");
-            hs.Add("a");
-            hs.Add("a");
-            hs.Add("a");
-            hs.Add("a");
-            Queue<String> cd = new Queue<string>();
-            cd.Enqueue("a");
-            cd.Enqueue(Guid.NewGuid().ToString());
-            cd.Enqueue(Guid.NewGuid().ToString());
-            cd.Enqueue(Guid.NewGuid().ToString());
-            var a = cd.FirstOrDefault(item => item == "a");
-            var b = cd.FirstOrDefault(item => item == "b");
-            Console.WriteLine("Hello World!       " +DateTime.Now.ToString("YYYYMMDDHHmmSS"));
+            LockHashSet<String> hs = new LockHashSet<string>();
+            HashSet<String> ha = new HashSet<string>();
+            for(int i =0; i< 100; i++)
+            {
+                int a = i;
+                Task.Run(() => 
+                {
+                    Console.WriteLine(a);
+                    hs.Add(a.ToString());
+                });
+            }
+            while(hs.Count() < 99)
+            {
+                Thread.Sleep(10);
+            }
+            Console.WriteLine("Hello World!       " + hs.ToJson());
             Console.ReadLine();
         }
         private void SetMq()
         {
-            var mqclient = new RabbitMQClient(new RabbitConfig()
-            {
-                Host = "172.18.10.127",
-                UserName = "qq",
-                Password = "1234",
-                VHost = "/walletcloud",
-                Port = 5672
-            });
+            var mqclient = new RabbitMQClient();
             dynamic model = new
             {
                 Key = 2,

@@ -5,6 +5,11 @@ using System.Threading;
 
 namespace Framework
 {
+    /// <summary>
+    /// 简单混合锁,包含原子锁及事件锁,
+    /// 在速度极快的情况下,会通过原子锁快速执行
+    /// 在速度慢的情况下,会通过事件锁锁住,避免浪费cpu,以及可能产生的死锁
+    /// </summary>
     public class SimpleHybridLock : IDisposable
     {
         private Int32 m_waiters = 0;

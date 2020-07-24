@@ -5,6 +5,21 @@ using System.Threading;
 
 namespace Framework
 {
+    /// <summary>
+    /// 在多个Task任务执行完成时,进行通知,
+    /// 类似单Task任务的ContinueWith
+    /// 
+    /// 
+    /// 使用方式:
+    /// AsyncCoordinator ac = new AsyncCoordinator();
+    /// foreach(var item in 10){
+    /// Task.Run(()=>{
+    /// ac.AboutToBegin();
+    /// }).Continuewith(()=> ac.JustEnded())
+    /// }
+    /// ac.AllBegun(status=> console.log("1"); )
+    /// 
+    /// </summary>
     public enum CoordinationStatus { AllDone, Timeout, Cancel}
     public sealed class AsyncCoordinator
     {
