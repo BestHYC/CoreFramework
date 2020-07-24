@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.30104.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Framework", "Framework\Framework.csproj", "{39493215-A9E9-4F01-8FC7-9C4373D73483}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Framework.Console", "Framework.Console\Framework.Console.csproj", "{833024B7-2030-4330-B871-4326B38AAA54}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Framework.Console", "Framework.Console\Framework.Console.csproj", "{833024B7-2030-4330-B871-4326B38AAA54}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Luecence", "Luecence\Luecence.csproj", "{7DA2BA96-4683-4643-8D13-10A6E69D618C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{833024B7-2030-4330-B871-4326B38AAA54}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{833024B7-2030-4330-B871-4326B38AAA54}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{833024B7-2030-4330-B871-4326B38AAA54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DA2BA96-4683-4643-8D13-10A6E69D618C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DA2BA96-4683-4643-8D13-10A6E69D618C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DA2BA96-4683-4643-8D13-10A6E69D618C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DA2BA96-4683-4643-8D13-10A6E69D618C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
