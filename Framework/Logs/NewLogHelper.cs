@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 
@@ -227,13 +228,13 @@ namespace Framework
             {
                 if (m_models0.Count <= 0) return;
                 item = m_models0;
-                m_models0 = new ConcurrentBag<SealedLogModel>();
+                //m_models0 = new ConcurrentBag<SealedLogModel>();
             }
             else if (Interlocked.CompareExchange(ref m_bag, 0, 1) == 1)
             {
                 if (m_models1.Count <= 0) return;
                 item = m_models1;
-                m_models1 = new ConcurrentBag<SealedLogModel>();
+                //m_models1 = new ConcurrentBag<SealedLogModel>();
             }
             ExecutingModels(item);
             m_timer.Change(1000 * 1, Timeout.Infinite);
@@ -253,6 +254,7 @@ namespace Framework
                     ControllerName = "执行操作失败",
                     Level = SealedLogLevel.Error,
                     Sign = "执行任务失败",
+                    ProjectName = item.First()?.ProjectName,
                     Value = e.Message
                 });
             }
@@ -274,9 +276,8 @@ namespace Framework
             StringBuilder sb_all = new StringBuilder();
             try
             {
-                while (!m_models0.IsEmpty)
                 {
-                    m_models0.TryTake(out var model);
+                    models.TryTake(out var model);
                     switch (model.Level)
                     {
                         case SealedLogLevel.Debug:
