@@ -15,4 +15,12 @@ namespace Framework
         Warn,
         Fatal
     }
+    public enum SealedLogLevel
+    {
+        Debug,
+        Info,
+        Error,
+        Warn,
+        Trace
+    }
 }

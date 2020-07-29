@@ -1,34 +1,46 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Framework
 {
+    public enum EnumA
+    {
+        A
+    }
     class Program
     {
         
         static void Main(string[] args)
         {
-            LockHashSet<String> hs = new LockHashSet<string>();
-            HashSet<String> ha = new HashSet<string>();
-            for(int i =0; i< 100; i++)
+            NewLogHelper.SetProjectName("TestConsole");
+            MQRabbitConfig.RabbitConfig = new RabbitConfig()
             {
-                int a = i;
-                Task.Run(() => 
-                {
-                    Console.WriteLine(a);
-                    hs.Add(a.ToString());
-                });
-            }
-            while(hs.Count() < 99)
+                Host = "172.18.10.127",
+                Password = "1234",
+                Port = 5672,
+                UserName = "qq",
+                VHost = "/walletcloud"
+            };
+            NewLogHelper.SetMQLogger("Logger_Route_Key", "Logger_Queue");
+            for (Int32 i = 0; i < 10000; i++)
             {
-                Thread.Sleep(10);
+                
+                NewLogHelper.Error(Guid.NewGuid().ToString());
+                NewLogHelper.Debug(Guid.NewGuid().ToString());
+                NewLogHelper.Info(Guid.NewGuid().ToString());
+                NewLogHelper.Trace(Guid.NewGuid().ToString());
+                NewLogHelper.Warn(Guid.NewGuid().ToString());
+                Thread.Sleep(1000*10);
             }
-            Console.WriteLine("Hello World!       " + hs.ToJson());
             Console.ReadLine();
         }
         private void SetMq()

@@ -84,14 +84,15 @@ namespace Framework
             channel.BasicConsume(queue: QueueName, consumer: consumer);
         }
 
-        public void DeRegister()
+        public virtual void StopRegist()
         {
-            this.connection.Close();
+            
         }
 
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
+            StopRegist();
             this.connection.Close();
             return Task.CompletedTask;
         }

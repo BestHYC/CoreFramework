@@ -6,6 +6,8 @@ using System.Diagnostics;
 using System;
 using System.Linq;
 using Lucene.Net.Search;
+using Framework;
+using Lucene.Net.Analysis.Standard;
 
 namespace LuecenceTest
 {
@@ -16,7 +18,7 @@ namespace LuecenceTest
         //数据位置
         public static String DATA_PATH = @"E:\MyCode\Best_Hong.Tool.Solution\Luecence\2020-07-23";
         static IndexWriter fsWriter = null;
-        public static void Execute(string[] args)
+        public static void Execute()
         {
             Boolean rebuild = true;
             FSDirectory fsDir = FSDirectory.Open(new DirectoryInfo(INDEX_STORE_PATH));
@@ -75,12 +77,52 @@ namespace LuecenceTest
                 {
                     Document detail = new Document();
                     String content = contents.ReadLine();
-                    detail.Add(new Field("content", content, Field.Store.YES, Field.Index.ANALYZED));
+                    detail.Add(new Field("Content", content, Field.Store.YES, Field.Index.ANALYZED));
                     fsWriter.AddDocument(detail);
                 }
 
             }
             return doc;
+        }
+    }
+    public class LoggerMqConsume : RabbitListener
+    {
+        //索引存放位置
+        public static String INDEX_STORE_PATH = @"E:\Luecence\Data";
+        public static IndexWriter fsWriter = null;
+        public static LoggerMqConsume Instance = new LoggerMqConsume();
+        public LoggerMqConsume()
+        {
+            RouteKey = "Logger_Route_Key";
+            QueueName = "Logger_Queue";
+            FSDirectory fsDir = FSDirectory.Open(new DirectoryInfo(INDEX_STORE_PATH));
+            Analyzer analyser = new PanGuAnalyzer();
+            fsWriter = new IndexWriter(fsDir, analyser, true, IndexWriter.MaxFieldLength.UNLIMITED);
+        }
+        public override bool Process(string message)
+        {
+            if (String.IsNullOrWhiteSpace(message)) return true;
+            try
+            {
+                SealedLogModel model = message.ToObject<SealedLogModel>();
+                Document doc = new Document();
+                //文件路径
+                doc.Add(new Field("Time", model.Time.ToDefaultTrimTime(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+                //文件名
+                doc.Add(new Field("Level", model.Level.ToString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+                doc.Add(new Field("Content", model.ToString(), Field.Store.YES, Field.Index.ANALYZED));
+                fsWriter.AddDocument(doc);
+                fsWriter.Commit();
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+            return true;
+        }
+        public override void StopRegist()
+        {
+            fsWriter.Close();
         }
     }
 }

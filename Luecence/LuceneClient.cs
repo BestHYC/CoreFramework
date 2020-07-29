@@ -9,22 +9,24 @@ using System.Diagnostics;
 using System.IO;
 using LuecenceTest;
 using System.Linq;
+using Lucene.Net.Analysis.Standard;
 
 namespace LuceneClient
 {
     class ProgramClient
     {
         //索引存放位置
-        public static String INDEX_STORE_PATH = ProgramTest.INDEX_STORE_PATH;
-        public static void SearchData(string[] args)
+        public static String INDEX_STORE_PATH = LoggerMqConsume.INDEX_STORE_PATH;
+        public static void SearchData(String str)
         {
+            if (String.IsNullOrWhiteSpace(str)) return;
             bool ReadOnly = true;
             FSDirectory fsDir = FSDirectory.Open(new DirectoryInfo(INDEX_STORE_PATH));
             IndexSearcher searcher = new IndexSearcher(IndexReader.Open(fsDir, ReadOnly));
             Stopwatch watch = new Stopwatch();
             watch.Start();
             bool InOrder = true;
-            ScoreDoc[] scoreDoc = Search(searcher, "1595493765", "content", 10, InOrder);
+            ScoreDoc[] scoreDoc = SearchTime(searcher, str, "Content", 10, InOrder);
 
             watch.Stop();
             Console.WriteLine("总共耗时{0}毫秒", watch.ElapsedMilliseconds);
@@ -33,16 +35,14 @@ namespace LuceneClient
             foreach (var docs in scoreDoc)
             {
                 Document doc = searcher.Doc(docs.doc);
-                Console.WriteLine("得分：{0}，文件名：{1}", docs.score, doc.Get("content"));
+                Console.WriteLine("{0}", doc.Get("Content"));
             }
             searcher.Close();
-            Console.ReadLine();
         }
 
         static ScoreDoc[] Search(IndexSearcher searcher, string queryString, string field, int numHit, bool inOrder)
         {
             TopScoreDocCollector collector = TopScoreDocCollector.create(numHit, inOrder);
-
             Analyzer analyser = new PanGuAnalyzer();
 
             QueryParser parser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, field, analyser);
@@ -52,6 +52,20 @@ namespace LuceneClient
             searcher.Search(query, collector);
 
             return collector.TopDocs().scoreDocs;
+        }
+        static ScoreDoc[] SearchTime(IndexSearcher searcher, string queryString, string field, int numHit, bool inOrder)
+        {
+            TopScoreDocCollector collector = TopScoreDocCollector.create(numHit, inOrder);
+            Analyzer analyser = new PanGuAnalyzer();
+            
+            QueryParser parser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, field, analyser);
+
+            Query query = parser.Parse(queryString);
+            QueryWrapperFilter filter = new QueryWrapperFilter(query);
+            TopFieldDocs topField = searcher.Search(query, filter, 20, new Sort(new SortField("Time", SortField.STRING_VAL, true)));
+            searcher.Search(query, collector);
+
+            return topField.scoreDocs;
         }
     }
 }

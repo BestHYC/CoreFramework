@@ -11,7 +11,6 @@ namespace Framework
 {
     public class RabbitMQClient
     {
-
         private readonly IModel _channel;
         private static RabbitMQClient m_instance;
         public static RabbitMQClient Instance
@@ -61,7 +60,15 @@ namespace Framework
             {
                 if (String.IsNullOrWhiteSpace(routingKey) || String.IsNullOrWhiteSpace(queue)) return;
                 if (message == null) return;
-                string msgJson = JsonConvert.SerializeObject(message);
+                string msgJson;
+                if (message.GetType().IsValueType || message.GetType() == typeof(String))
+                {
+                    msgJson = message.ToString();
+                }
+                else
+                {
+                    msgJson = JsonConvert.SerializeObject(message);
+                }
                 var body = Encoding.UTF8.GetBytes(msgJson);
                 LogHelper.Info($"PushMessage,routingKey:{routingKey},Body is {body}");
                 _channel.QueueDeclare(queue: queue,

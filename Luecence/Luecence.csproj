@@ -39,9 +39,6 @@
     <Reference Include="Dapper, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dapper.2.0.35\lib\net461\Dapper.dll</HintPath>
     </Reference>
-    <Reference Include="Framework, Version=1.0.1.46, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Framework.1.0.1.48\lib\netstandard2.0\Framework.dll</HintPath>
-    </Reference>
     <Reference Include="Lucene.Net">
       <HintPath>bin\DLL\DLL\Lucene.Net.dll</HintPath>
     </Reference>
@@ -216,6 +213,12 @@
     <Content Include="PanGu.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Framework\Framework.csproj">
+      <Project>{39493215-a9e9-4f01-8fc7-9c4373d73483}</Project>
+      <Name>Framework</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
