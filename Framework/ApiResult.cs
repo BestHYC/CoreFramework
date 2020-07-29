@@ -48,6 +48,17 @@ namespace Framework
         /// 不支持的支付方式
         /// </summary>
         public const String FailPayWay = "02001";
+        public const String TranceferError = "04000";
+        public const String ArgumentNull = "04001";
+        public const String FailPre = "04101";
+        /// <summary>
+        /// 重复订单号
+        /// </summary>
+        public const String RepeatOrderId = "04102";
+        /// <summary>
+        /// 无效订单号
+        /// </summary>
+        public const String FailOrderId = "04103";
         /// <summary>
         ///  获取汇率异常
         /// </summary>
