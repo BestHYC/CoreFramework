@@ -22,6 +22,8 @@ namespace Lucence.Logger.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //自定义自己的服务
+            //注意 先将Dict复制入bin,并引入对应的dll当
             services.AddMyService(Configuration);
             services.AddRazorPages().AddRazorRuntimeCompilation();
             services.AddControllersWithViews();
