@@ -1,8 +1,108 @@
 ﻿@{
     ViewData["Title"] = "日志搜索页";
 }
-
-<div class="text-center">
-    <h1 class="display-4">测试1</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+    <div class="row">
+        <div class="col-sm-2">
+            <ul class="nav nav-pills nav-stacked" id="level">
+                <li class="active" data-value=""><a>All</a></li>
+                <li data-value="Info"><a>Info</a></li>
+                <li data-value="Error"><a>Error</a></li>
+                <li data-value="Trace"><a>Trace</a></li>
+                <li data-value="Warn"><a>Warn</a></li>
+            </ul>
+        </div>
+        <div class="col-sm-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="search"
+                                   placeholder="请输入名字">
+                        </div>
+                        <button class="btn btn-primary col-sm-2" id="searchBtn">名字</button>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <table class="table table-striped"  id="logtable">
+                        <thead>
+                            <tr>
+                                <th>时间</th>
+                                <th>级别</th>
+                                <th>内容</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+@section Scripts{
+    <script type="text/javascript">
+        var m_init = {
+            logger:"Home/Logger"
+        };
+        var m_data = {
+            project:"",
+            level:"",
+            search:""
+        };
+        $(function () {
+            m_data.project = $("#project li.active").attr("data-value");
+            $("#searchBtn").trigger("click");
+        })
+        $("#searchBtn").on("click", function () {
+            var url = m_init.logger;
+            url += "?project=" + m_data.project + "&search=";
+            var search = "";
+            if (m_data.level) {
+                search += m_data.level;
+            }
+            var query = $("#search").val();
+            if (!query) {
+                query = '2020';
+            }
+            if (search) {
+                search += "&";
+            }
+            search += query;
+            url += encodeURIComponent(search);
+            console.log(url);
+            $.ajax({
+                url: url,
+                type:"get",
+                success: function (response) {
+                    var str = "";
+                    if (!response) {
+                        str += "<tr><td>无</td><td>无</td><td>无</td></tr>";
+                    } else {
+                        response.forEach(function (item) {
+                            item = JSON.parse(item);
+                            str += "<tr><td>" + item["Time"] + "</td><td>" + item["Level"] + "</td><td>" + item["Value"] + "</td></tr>";
+                        })
+                    }
+                    $("#logtable tbody").html(str);
+                }
+            })
+            return false;
+        })
+        $("#project li").on("click", function () {
+            var temp = $(this);
+            temp.siblings().removeClass("active");
+            temp.addClass("active");
+            m_data.project = temp.attr("data-value");
+            $("#searchBtn").trigger("click");
+            return false;
+        })
+        $("#level li").on("click", function () {
+            var temp = $(this);
+            temp.siblings().removeClass("active");
+            temp.addClass("active");
+            m_data.level = temp.attr("data-value");
+            $("#searchBtn").trigger("click");
+            return false;
+        })
+    </script>
+}

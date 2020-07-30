@@ -28,10 +28,11 @@ namespace Framework
         /// <param name="projectName"></param>
         /// <param name="routeKey"></param>
         /// <param name="queue"></param>
-        public static void SetMQLogger(String routeKey, String queue)
+        public static void SetMQLogger(String routeKey, String queue, String project)
         {
             m_routeKey = routeKey;
             m_queue = queue;
+            m_projectName = project;
             m_logger.ExecuteModel += models =>
             {
                 while (!models.IsEmpty)

@@ -21,7 +21,6 @@ namespace Framework
         
         static void Main(string[] args)
         {
-            NewLogHelper.SetProjectName("TestConsole");
             MQRabbitConfig.RabbitConfig = new RabbitConfig()
             {
                 Host = "172.18.10.127",
@@ -30,7 +29,7 @@ namespace Framework
                 UserName = "qq",
                 VHost = "/walletcloud"
             };
-            NewLogHelper.SetMQLogger("Logger_Route_Key", "Logger_Queue");
+            NewLogHelper.SetMQLogger("Logger_Route_Key", "Logger_Queue", "TestConsole");
             for (Int32 i = 0; i < 10000; i++)
             {
                 

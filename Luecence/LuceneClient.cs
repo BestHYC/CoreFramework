@@ -55,17 +55,30 @@ namespace LuceneClient
         }
         static ScoreDoc[] SearchTime(IndexSearcher searcher, string queryString, string field, int numHit, bool inOrder)
         {
-            TopScoreDocCollector collector = TopScoreDocCollector.create(numHit, inOrder);
+            //TopScoreDocCollector collector = TopScoreDocCollector.create(numHit, inOrder);
             Analyzer analyser = new PanGuAnalyzer();
             
             QueryParser parser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, field, analyser);
+            var querys = queryString.Split('&');
+            if (querys != null || querys.Length > 1)
+            {
+                BooleanQuery query = new BooleanQuery();
+                foreach(var str in querys)
+                {
+                    query.Add(parser.Parse(str), BooleanClause.Occur.MUST);
+                }
+                TopFieldDocs topField = searcher.Search(query, null, 20, new Sort(new SortField("Time", SortField.STRING_VAL, true)));
+                return topField.scoreDocs;
+            }
+            else
+            {
+                Query query = parser.Parse(queryString);
+                TopFieldDocs topField = searcher.Search(query, null, 20, new Sort(new SortField("Time", SortField.STRING_VAL, true)));
+                //searcher.Search(query, collector);
 
-            Query query = parser.Parse(queryString);
-            QueryWrapperFilter filter = new QueryWrapperFilter(query);
-            TopFieldDocs topField = searcher.Search(query, filter, 20, new Sort(new SortField("Time", SortField.STRING_VAL, true)));
-            searcher.Search(query, collector);
+                return topField.scoreDocs;
+            }
 
-            return topField.scoreDocs;
         }
     }
 }

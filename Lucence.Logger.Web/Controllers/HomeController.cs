@@ -22,6 +22,18 @@ namespace Lucence.Logger.Web.Controllers
         {
             return View();
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="project"></param>
+        /// <param name="level"></param>
+        /// <param name="search"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public JsonResult Logger(String project,String search)
+        {
+            return new JsonResult(LucenceHelper.SearchData(project, search));
+        }
 
         public IActionResult Privacy()
         {
