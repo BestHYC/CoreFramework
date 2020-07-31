@@ -89,6 +89,7 @@ namespace Lucence.Logger.Web
                 BooleanQuery query = new BooleanQuery();
                 foreach (var str in querys)
                 {
+                    if (String.IsNullOrWhiteSpace(str)) continue;
                     query.Add(parser.Parse(str), BooleanClause.Occur.MUST);
                 }
                 TopFieldDocs topField = searcher.Search(query, null, 20, new Sort(new SortField("Time", SortField.STRING_VAL, true)));

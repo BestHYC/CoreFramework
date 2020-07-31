@@ -70,7 +70,6 @@ namespace Framework
                     msgJson = JsonConvert.SerializeObject(message);
                 }
                 var body = Encoding.UTF8.GetBytes(msgJson);
-                LogHelper.Info($"PushMessage,routingKey:{routingKey},Body is {body}");
                 _channel.QueueDeclare(queue: queue,
                     exclusive: false,
                     durable: true,

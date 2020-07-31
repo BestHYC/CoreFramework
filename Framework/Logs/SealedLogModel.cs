@@ -58,13 +58,13 @@ namespace Framework
             {
                 Value = "";
             }
-            if (Value.GetType().IsValueType || Value.GetType() == typeof(String))
+            if (Value.GetType().IsValueType)
             {
                 sb.Append($"\"{nameof(Value)}\":\"{Value}\"}}");
             }
             else
             {
-                sb.Append($"\"{nameof(Value)}\":\"{Value.ToJson()}\"}}");
+                sb.Append($"\"{nameof(Value)}\":{Value.ToJson()}}}");
             }
             return sb.ToString();
         }

@@ -2,7 +2,7 @@
     ViewData["Title"] = "日志搜索页";
 }
     <div class="row">
-        <div class="col-sm-2">
+        <div class="col-sm-1">
             <ul class="nav nav-pills nav-stacked" id="level">
                 <li class="active" data-value=""><a>All</a></li>
                 <li data-value="Info"><a>Info</a></li>
@@ -11,24 +11,25 @@
                 <li data-value="Warn"><a>Warn</a></li>
             </ul>
         </div>
-        <div class="col-sm-8">
+        <div class="col-sm-11">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <div class="row">
-                        <div class="col-sm-6">
+                        <div class="col-sm-3">
                             <input type="text" class="form-control" id="search"
                                    placeholder="请输入名字">
                         </div>
-                        <button class="btn btn-primary col-sm-2" id="searchBtn">名字</button>
+                        <button class="btn btn-primary col-sm-1" id="searchBtn">搜索</button>
+                        <label>时间:"2020-07-31 12:20:21"需包起来,并用&连接, 或用空格连接</label>
                     </div>
                 </div>
                 <div class="panel-body">
-                    <table class="table table-striped"  id="logtable">
+                    <table style="table-layout: fixed;word-break:break-all; word-wrap:break-all;" class="table table-striped"  id="logtable">
                         <thead>
                             <tr>
-                                <th>时间</th>
-                                <th>级别</th>
-                                <th>内容</th>
+                                <th style="width:180px;">时间</th>
+                                <th style="width:80px; ">级别</th>
+                                <th style="width:auto;">内容</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -80,7 +81,16 @@
                     } else {
                         response.forEach(function (item) {
                             item = JSON.parse(item);
-                            str += "<tr><td>" + item["Time"] + "</td><td>" + item["Level"] + "</td><td>" + item["Value"] + "</td></tr>";
+                            var bodyHtml = "";
+                            var obj = item["Value"];
+                            if (obj) {
+                                if (typeof obj == "string") {
+                                    bodyHtml = obj;
+                                } else {
+                                    bodyHtml = JSON.stringify(obj);
+                                }
+                            }
+                            str += "<tr><td>" + item["Time"] + "</td><td>" + item["Level"] + "</td><td>" + bodyHtml + "</td></tr>";
                         })
                     }
                     $("#logtable tbody").html(str);

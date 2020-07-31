@@ -20,7 +20,7 @@ namespace Lucence.Logger.Web
             
 
             //mq消息队列,配置时候展示,用的时候直接使用
-            //services.AddHostedService<LoggerMqConsume>();
+            services.AddHostedService<LoggerMqConsume>();
             LoggerModel.SetLogger(Configuration);
             return services;
         }

@@ -29,15 +29,15 @@ namespace Framework
                 UserName = "qq",
                 VHost = "/walletcloud"
             };
-            NewLogHelper.SetMQLogger("Logger_Route_Key", "Logger_Queue", "TestConsole");
+            LogHelper.SetMQLogger("Logger_Route_Key", "Logger_Queue", "TestConsole");
             for (Int32 i = 0; i < 10000; i++)
             {
                 
-                NewLogHelper.Error(Guid.NewGuid().ToString());
-                NewLogHelper.Debug(Guid.NewGuid().ToString());
-                NewLogHelper.Info(Guid.NewGuid().ToString());
-                NewLogHelper.Trace(Guid.NewGuid().ToString());
-                NewLogHelper.Warn(Guid.NewGuid().ToString());
+                LogHelper.Error(Guid.NewGuid().ToString());
+                LogHelper.Debug(Guid.NewGuid().ToString());
+                LogHelper.Info(Guid.NewGuid().ToString());
+                LogHelper.Trace(Guid.NewGuid().ToString());
+                LogHelper.Warn(Guid.NewGuid().ToString());
                 Thread.Sleep(1000*10);
             }
             Console.ReadLine();
