@@ -227,15 +227,19 @@ namespace Framework
             ConcurrentBag<SealedLogModel> item = null;
             if (Interlocked.CompareExchange(ref m_bag, 1, 0) == 0)
             {
-                if (m_models0.Count <= 0) return;
-                item = m_models0;
-                //m_models0 = new ConcurrentBag<SealedLogModel>();
+                if (m_models0.Count > 0)
+                {
+                    item = m_models0;
+                    //m_models0 = new ConcurrentBag<SealedLogModel>();
+                }
             }
             else if (Interlocked.CompareExchange(ref m_bag, 0, 1) == 1)
             {
-                if (m_models1.Count <= 0) return;
-                item = m_models1;
-                //m_models1 = new ConcurrentBag<SealedLogModel>();
+                if (m_models1.Count > 0) 
+                {
+                    item = m_models1;
+                    //m_models1 = new ConcurrentBag<SealedLogModel>();
+                }
             }
             ExecutingModels(item);
             m_timer.Change(1000 * 1, Timeout.Infinite);
