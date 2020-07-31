@@ -33,7 +33,7 @@ namespace Lucence.Logger.Web
         public static String MQQueueName;
         public static void SetLogger(IConfiguration Configuration)
         {
-            Path = Configuration.GetSection("LoggerModel:Path").Value;
+            Path = System.IO.Path.Combine(Environment.CurrentDirectory, "Lucence");
             MQRouteKey = Configuration.GetSection("LoggerModel:MQRouteKey").Value;
             MQQueueName = Configuration.GetSection("LoggerModel:MQQueueName").Value;
         }
