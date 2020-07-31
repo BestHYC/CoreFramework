@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.1.52</Version>
-    <Description>1.状态码改为int</Description>
+    <Version>1.0.1.53</Version>
+    <Description>1.修改日志,添加Lucence日志展示</Description>
     <Authors>Best_Hong</Authors>
     <PackageProjectUrl>https://github.com/BestHYC/CoreFramework.git</PackageProjectUrl>
     <PackageReleaseNotes>1.全局配置扩展

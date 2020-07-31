@@ -1,19 +1,94 @@
-﻿using Newtonsoft.Json;
-using NLog;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 
 namespace Framework
 {
-    /// <summary>
-    /// 日志扩展
-    /// 注意此处只有3个日志 warning日志,Infomation日志 及 all日志
-    /// </summary>
-    public class LogHelper<T>:BaseLogger
+    public class NewBaseLogger
+    {
+        protected static NewSealedLogger m_logger = new NewSealedLogger();
+        private static String m_projectName;
+        private static String m_routeKey;
+        private static String m_queue;
+        /// <summary>
+        /// 当前项目初始化
+        /// </summary>
+        /// <param name="projectName"></param>
+        public static void SetProjectName(String projectName)
+        {
+            m_projectName = projectName;
+        }
+        /// <summary>
+        /// 当前项目初始化,并且执行MQ操作中的key及Queue
+        /// </summary>
+        /// <param name="project">项目名</param>
+        /// <param name="routeKey">路由值key</param>
+        /// <param name="queue">消息队列</param>
+        public static void SetMQLogger(String routeKey, String queue, String project="")
+        {
+            m_routeKey = routeKey;
+            m_queue = queue;
+            m_projectName = project;
+            m_logger.ExecuteModel += models =>
+            {
+                while (!models.IsEmpty)
+                {
+                    models.TryTake(out var model);
+                    RabbitMQClient.Instance.PushMessage(m_routeKey, m_queue, model);
+                }
+            };
+        }
+        protected static SealedLogModel GetLogModel(SealedLogLevel level, Object val)
+        {
+            return new SealedLogModel()
+            {
+                ProjectName = m_projectName,
+                Time = DateTime.Now,
+                Level = level,
+                Value = val
+            };
+        }
+        protected static SealedLogModel GetLogModel(String sign, SealedLogLevel level, Object val)
+        {
+            return new SealedLogModel()
+            {
+                Time = DateTime.Now,
+                ProjectName = m_projectName,
+                Sign = sign,
+                Level = level,
+                Value = val
+            };
+        }
+        protected static SealedLogModel GetLogModel(String controller, String sign, SealedLogLevel level, Object val)
+        {
+            return new SealedLogModel()
+            {
+                Time = DateTime.Now,
+                ProjectName = m_projectName,
+                ControllerName = controller,
+                Sign = sign,
+                Level = level,
+                Value = val
+            };
+        }
+        protected static SealedLogModel GetLogModel(String project, String controller, String sign, SealedLogLevel level, Object val)
+        {
+            return new SealedLogModel()
+            {
+                Time = DateTime.Now,
+                ProjectName = project,
+                ControllerName = controller,
+                Sign = sign,
+                Level = level,
+                Value = val
+            };
+        }
+    }
+    public class LogHelper<T> : NewBaseLogger
     {
         private static String m_name = typeof(T).Name;
         public static LogHelper<T> Instance = new LogHelper<T>();
@@ -21,290 +96,301 @@ namespace Framework
         {
 
         }
-        private String GetName(String name = null)
-        {
-            if (String.IsNullOrEmpty(name)) return $"---类型{m_name}--";
-            return $"---类型{m_name}--{name}";
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="obj"></param>
         public void LogInformation(Object obj)
         {
-            m_logger.Info(GetString(GetName(), obj));
+            m_logger.EnqueueLogger(GetLogModel(m_name, null, SealedLogLevel.Info, obj));
         }
-        public void LogInformation(String obj)
+        public void LogInformation(String sign, Object obj)
         {
-            m_logger.Info(GetString(GetName(), obj));
-        }
-        public void LogInformation(String name, Object obj)
-        {
-            m_logger.Info(GetString(GetName(name), obj));
-        }
-        public void LogInformation(String name, String obj)
-        {
-            m_logger.Info(GetString(GetName(name), obj));
+            m_logger.EnqueueLogger(GetLogModel(m_name, sign, SealedLogLevel.Info, obj));
         }
         public void LogWarning(Object obj)
         {
-            m_logger.Warn(GetString(GetName(), obj));
+            m_logger.EnqueueLogger(GetLogModel(m_name, null, SealedLogLevel.Warn, obj));
         }
-        public void LogWarning(String obj)
+        public void LogWarning(String sign, Object obj)
         {
-            m_logger.Warn(GetString(GetName(), obj));
-        }
-        public void LogWarning(String name, Object obj)
-        {
-            m_logger.Warn(GetString(GetName(name), obj));
-        }
-        public void LogWarning(String name, String obj)
-        {
-            m_logger.Warn(GetString(GetName(name), obj));
-        }
-        public void LogTrace(String obj)
-        {
-            m_logger.Trace(GetString(GetName(), obj));
+            m_logger.EnqueueLogger(GetLogModel(m_name, sign, SealedLogLevel.Warn, obj));
         }
         public void LogTrace(Object obj)
         {
-            m_logger.Trace(GetString(GetName(), obj));
+            m_logger.EnqueueLogger(GetLogModel(m_name, null, SealedLogLevel.Trace, obj));
         }
-        public void LogTrace(String name, Object obj)
+        public void LogTrace(String sign, Object obj)
         {
-            m_logger.Trace(GetString(GetName(name), obj));
-        }
-        public void LogTrace(String name, String obj)
-        {
-            m_logger.Trace(GetString(GetName(name), obj));
-        }
-        public void LogError(String obj)
-        {
-            m_logger.Error(GetString(GetName(), obj));
+            m_logger.EnqueueLogger(GetLogModel(m_name, sign, SealedLogLevel.Trace, obj));
         }
         public void LogError(Object obj)
         {
-            m_logger.Error(GetString(GetName(), obj));
+            m_logger.EnqueueLogger(GetLogModel(m_name, null, SealedLogLevel.Error, obj));
         }
-        public void LogError(String name, Object obj)
+        public void LogError(String sign, Object obj)
         {
-            m_logger.Error(GetString(GetName(name), obj));
-        }
-        public void LogError(String name, String obj)
-        {
-            m_logger.Error(GetString(GetName(name), obj));
-        }
-        public void LogDebug(String obj)
-        {
-            m_logger.Debug(GetString(GetName(), obj));
+            m_logger.EnqueueLogger(GetLogModel(m_name, sign, SealedLogLevel.Error, obj));
         }
         public void LogDebug(Object obj)
         {
-            m_logger.Debug(GetString(GetName(), obj));
+            m_logger.EnqueueLogger(GetLogModel(m_name, null, SealedLogLevel.Debug, obj));
         }
-        public void LogDebug(String name, Object obj)
+        public void LogDebug(String sign, Object obj)
         {
-            m_logger.Debug(GetString(GetName(name), obj));
-        }
-        public void LogDebug(String name, String obj)
-        {
-            m_logger.Debug(GetString(GetName(name), obj));
+            m_logger.EnqueueLogger(GetLogModel(m_name, sign, SealedLogLevel.Debug, obj));
         }
         public void LogCritical(Object obj)
         {
-            m_logger.Error(GetString(GetName(), obj));
+            m_logger.EnqueueLogger(GetLogModel(m_name, null, SealedLogLevel.Error, obj));
         }
-        public void LogCritical(String obj)
+        public void LogCritical(String sign, Object obj)
         {
-            m_logger.Error(GetString(GetName(), obj));
-        }
-        public void LogCritical(String name, Object obj)
-        {
-            m_logger.Error(GetString(GetName(name), obj));
-        }
-        public void LogCritical(String name, String obj)
-        {
-            m_logger.Error(GetString(GetName(name), obj));
+            m_logger.EnqueueLogger(GetLogModel(m_name, sign, SealedLogLevel.Error, obj));
         }
     }
-    public class LogHelper : BaseLogger
+    public class LogHelper:NewBaseLogger
     {
         public static void Info(Object obj)
         {
-            m_logger.Info(GetString(obj));
-        }
-        public static void Info(String obj)
-        {
-            m_logger.Info(GetString(obj));
+            m_logger.EnqueueLogger(GetLogModel(SealedLogLevel.Info, obj));
         }
         public static void Info(String name, Object obj)
         {
-            m_logger.Info(GetString(name, obj));
-        }
-        public static void Info(String name, String obj)
-        {
-            m_logger.Info(GetString(name, obj));
+            m_logger.EnqueueLogger(GetLogModel(name, SealedLogLevel.Info, obj));
         }
         public static void Warn(Object obj)
         {
-            m_logger.Warn(GetString(obj));
-        }
-        public static void Warn(String obj)
-        {
-            m_logger.Warn(GetString(obj));
+            m_logger.EnqueueLogger(GetLogModel(SealedLogLevel.Warn, obj));
         }
         public static void Warn(String name, Object obj)
         {
-            m_logger.Warn(GetString(name, obj));
-        }
-        public static void Warn(String name, String obj)
-        {
-            m_logger.Warn(GetString(name, obj));
+            m_logger.EnqueueLogger(GetLogModel(name, SealedLogLevel.Warn, obj));
         }
         public static void Trace(Object obj)
         {
-            m_logger.Trace(GetString(obj));
-        }
-        public static void Trace(String obj)
-        {
-            m_logger.Trace(GetString(obj));
+            m_logger.EnqueueLogger(GetLogModel(SealedLogLevel.Trace, obj));
         }
         public static void Trace(String name, Object obj)
         {
-            m_logger.Trace(GetString(name, obj));
-        }
-        public static void Trace(String name, String obj)
-        {
-            m_logger.Trace(GetString(name, obj));
+            m_logger.EnqueueLogger(GetLogModel(name, SealedLogLevel.Trace, obj));
         }
         public static void Error(Object obj)
         {
-            m_logger.Error(GetString(obj));
-        }
-        public static void Error(String obj)
-        {
-            m_logger.Error(GetString(obj));
+            m_logger.EnqueueLogger(GetLogModel(SealedLogLevel.Error, obj));
         }
         public static void Error(String name, Object obj)
         {
-            m_logger.Error(GetString(name, obj));
-        }
-        public static void Error(String name, String obj)
-        {
-            m_logger.Error(GetString(name, obj));
+            m_logger.EnqueueLogger(GetLogModel(name, SealedLogLevel.Error, obj));
         }
         public static void Debug(Object obj)
         {
-            m_logger.Debug(GetString(obj));
-        }
-        public static void Debug(String obj)
-        {
-            m_logger.Debug(GetString(obj));
+            m_logger.EnqueueLogger(GetLogModel(SealedLogLevel.Debug, obj));
         }
         public static void Debug(String name, Object obj)
         {
-            m_logger.Debug(GetString(name, obj));
-        }
-        public static void Debug(String name, String obj)
-        {
-            m_logger.Debug(GetString(name, obj));
+            m_logger.EnqueueLogger(GetLogModel(name, SealedLogLevel.Debug, obj));
         }
         public static void Critical(String obj)
         {
-            m_logger.Error(GetString(obj));
-        }
-        public static void Critical(Object obj)
-        {
-            m_logger.Error(GetString(obj));
+            m_logger.EnqueueLogger(GetLogModel(SealedLogLevel.Error, obj));
         }
         public static void Critical(String name, Object obj)
         {
-            m_logger.Error(GetString(name, obj));
-        }
-        public static void Critical(String name, String obj)
-        {
-            m_logger.Error(GetString(name, obj));
+            m_logger.EnqueueLogger(GetLogModel(name, SealedLogLevel.Error, obj));
         }
     }
-    public class BaseLogger
+    public class NewSealedLogger
     {
-        protected static SealedLogger m_logger = new SealedLogger();
-        public static void UseNlog()
+        private ConcurrentBag<SealedLogModel> m_models0 = new ConcurrentBag<SealedLogModel>();
+        private ConcurrentBag<SealedLogModel> m_models1 = new ConcurrentBag<SealedLogModel>();
+        /// <summary>
+        /// 0时,进入m_models0队列,1时进入m_models1队列
+        /// </summary>
+        private Int32 m_bag = 0;
+        private Timer m_timer;
+        private String m_path;
+        /// <summary>
+        /// 事件委托,注意,如果在执行数据后,依旧保留数据,会在本地保存一份日志
+        /// 如果不希望在本地保留数据,那么将ConcurrentBag中数据清空
+        /// 不建议在本地保留数据,不建议出现无限循环,容易死锁
+        /// </summary>
+        public event Action<ConcurrentBag<SealedLogModel>> ExecuteModel;
+        public NewSealedLogger()
         {
-            m_logger.UseNlog();
+            m_timer = new Timer(Register, null, Timeout.Infinite, Timeout.Infinite);
+            m_path = Path.Combine(Environment.CurrentDirectory, "Logs");
+            if (!Directory.Exists(m_path))
+            {
+                Directory.CreateDirectory(m_path);
+            }
+            m_timer.Change(1000 * 1, Timeout.Infinite);
         }
-        private static Object m_lock = new object();
-        private static StringBuilder sb = new StringBuilder();
-        protected static String GetString(Object obj)
+        private void Register(Object state)
         {
-            lock (m_lock)
+            ConcurrentBag<SealedLogModel> item = null;
+            if (Interlocked.CompareExchange(ref m_bag, 1, 0) == 0)
             {
-                String result = string.Empty;
-                sb.AppendLine("");
-                sb.AppendLine("---------------------------------------------");
-                sb.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                sb.Append("-----|");
-                if (obj == null)
+                if (m_models0.Count <= 0) return;
+                item = m_models0;
+                //m_models0 = new ConcurrentBag<SealedLogModel>();
+            }
+            else if (Interlocked.CompareExchange(ref m_bag, 0, 1) == 1)
+            {
+                if (m_models1.Count <= 0) return;
+                item = m_models1;
+                //m_models1 = new ConcurrentBag<SealedLogModel>();
+            }
+            ExecutingModels(item);
+            m_timer.Change(1000 * 1, Timeout.Infinite);
+        }
+        private void ExecutingModels(ConcurrentBag<SealedLogModel> item)
+        {
+            if (item == null) return;
+            try
+            {
+                ExecuteModel?.Invoke(item);
+            }
+            catch (Exception e)
+            {
+                item.Add(new SealedLogModel()
                 {
-                    sb.Append("参数为空");
-                }
-                else
+                    Time = DateTime.Now,
+                    ControllerName = "执行操作失败",
+                    Level = SealedLogLevel.Error,
+                    Sign = "执行任务失败",
+                    ProjectName = item.First()?.ProjectName,
+                    Value = e.Message
+                });
+            }
+            finally
+            {
+                if (item != null && item.Count > 0)
                 {
-                    sb.Append(JsonConvert.SerializeObject(obj));
+                    CurrentExecuteModel(item);
                 }
-                result = sb.ToString();
-                sb.Clear();
-                return result;
             }
         }
-        protected static String GetString(String obj)
+        private void CurrentExecuteModel(ConcurrentBag<SealedLogModel> models)
         {
-            lock (m_lock)
+            StringBuilder sb_Warn = new StringBuilder();
+            StringBuilder sb_Info = new StringBuilder();
+            StringBuilder sb_Trace = new StringBuilder();
+            StringBuilder sb_Debug = new StringBuilder();
+            StringBuilder sb_Error = new StringBuilder();
+            StringBuilder sb_all = new StringBuilder();
+            try
             {
-                String result = string.Empty;
-                sb.AppendLine("");
-                sb.AppendLine("---------------------------------------------");
-                sb.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                sb.Append("-----|----");
-                if (String.IsNullOrEmpty(obj))
+                while(!models.IsEmpty)
                 {
-                    sb.Append("参数为空");
+                    models.TryTake(out var model);
+                    if (model == null) continue;
+                    switch (model.Level)
+                    {
+                        case SealedLogLevel.Debug:
+                            sb_Debug.AppendLine(model.ToString());
+                            break;
+                        case SealedLogLevel.Error:
+                            sb_Error.AppendLine(model.ToString());
+                            break;
+                        case SealedLogLevel.Info:
+                            sb_Info.AppendLine(model.ToString());
+                            break;
+                        case SealedLogLevel.Trace:
+                            sb_Trace.AppendLine(model.ToString());
+                            break;
+                        case SealedLogLevel.Warn:
+                            sb_Warn.AppendLine(model.ToString());
+                            break;
+                        default:
+                            sb_Trace.AppendLine(model.ToString());
+                            break; ;
+                    }
                 }
-                else
+                if (sb_Warn.Length > 0)
                 {
-                    sb.Append(obj);
+                    sb_all.Append(sb_Warn);
+                    String path = GetPath($"Warn-{DateTime.Now:yyyy-MM-dd}.log");
+                    File.AppendAllText(path, sb_Warn.ToString());
                 }
-                result = sb.ToString();
-                sb.Clear();
-                return result;
+                if (sb_Debug.Length > 0)
+                {
+                    sb_all.Append(sb_Debug);
+                    String path = GetPath($"Debug-{DateTime.Now:yyyy-MM-dd}.log");
+                    File.AppendAllText(path, sb_Debug.ToString());
+                }
+                if (sb_Error.Length > 0)
+                {
+                    sb_all.Append(sb_Error);
+                    String path = GetPath($"Error-{DateTime.Now:yyyy-MM-dd}.log");
+                    File.AppendAllText(path, sb_Error.ToString());
+                }
+                if (sb_Info.Length > 0)
+                {
+                    sb_all.Append(sb_Info);
+                    String path = GetPath($"Info-{DateTime.Now:yyyy-MM-dd}.log");
+                    File.AppendAllText(path, sb_Info.ToString());
+                }
+                if (sb_Trace.Length > 0)
+                {
+                    sb_all.Append(sb_Trace);
+                    String path = GetPath($"Trace-{DateTime.Now:yyyy-MM-dd}.log");
+                    File.AppendAllText(path, sb_Trace.ToString());
+                }
+            }
+            catch(Exception e)
+            {
+                sb_all.AppendLine(e.Message);
+            }
+            finally
+            {
+                if (sb_all.Length > 0)
+                {
+                    ConvertAllToOtherPath(sb_all.ToString());
+                }
             }
         }
-        protected static String GetString(String name, Object obj)
+        private DateTime m_today = default;
+        private void ConvertAllToOtherPath(String all)
         {
-            String str;
-            if (obj != null)
+            String path = Path.Combine(m_path, $"alllog.log");
+            if (m_today == default || m_today.Day != DateTime.Now.Day)
             {
-                str = $"{name}----数据为----{JsonConvert.SerializeObject(obj)}";
+                m_today = DateTime.Now;
+                if (File.Exists(path))
+                {
+                    FileInfo info = new FileInfo(path);
+                    if (info.CreationTime.Day != m_today.Day)
+                    {
+                        String newPath = GetPath(info.CreationTime, $"all-{info.CreationTime:yyyy-MM-dd}-{m_today.Minute}-{m_today.Millisecond}.log");
+                        info.MoveTo(newPath);
+                    }
+                }
             }
-            else
-            {
-                str = $"{name}----数据为空";
-            }
-            return GetString(str);
+            File.AppendAllText(path, all);
         }
-        protected static String GetString(String name, String obj)
+        private string GetPath(String logname)
         {
-            String str;
-            if (!String.IsNullOrWhiteSpace(obj))
+            return GetPath(DateTime.Now, logname);
+        }
+        private String GetPath(DateTime dt, String logname)
+        {
+            String dic = Path.Combine(m_path, dt.ToString("yyyy-MM-dd"));
+            if (!Directory.Exists(dic))
             {
-                str = $"{name}----数据为----{obj}";
+                Directory.CreateDirectory(dic);
             }
-            else
+            return Path.Combine(dic, logname);
+        }
+        public void EnqueueLogger(SealedLogModel model)
+        {
+            if (model == null) return;
+            if (Volatile.Read(ref m_bag) == 0)
             {
-                str = $"{name}----数据为空";
+                m_models0.Add(model);
+                return;
             }
-            return GetString(str);
+            if (Volatile.Read(ref m_bag) == 1)
+            {
+                m_models1.Add(model);
+                return;
+            }
         }
     }
 }

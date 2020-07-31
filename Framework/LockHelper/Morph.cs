@@ -8,7 +8,7 @@ namespace Framework
     public delegate Int32 Morpher<TResult, TArgument>(Int32 startVal, TArgument argument, out TResult morphResult);
     public class Common
     {
-        public static TResult Morph<TResult, TArgument>(ref Int32 target, TArgument argument,Morpher<TResult, TArgument> morpher)
+        public static TResult Morph<TResult, TArgument>(ref Int32 target, TArgument argument, Morpher<TResult, TArgument> morpher)
         {
             TResult morphResult;
             Int32 currentVal = target, startVal, desiredVal;
@@ -20,6 +20,5 @@ namespace Framework
             } while (startVal != currentVal);
             return morphResult;
         }
-}
-
+    }
 }
