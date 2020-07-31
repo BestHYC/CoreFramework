@@ -134,8 +134,26 @@ namespace Lucence.Logger.Web
         /// 那么需要重新将索引加载至内存中(每次m_indexWrite时候,去掉缓存的索引)
         /// </summary>
         private static ConcurrentDictionary<String, IndexSearcher> m_indexSearch = new ConcurrentDictionary<String, IndexSearcher>();
+        private static DateTime m_now = DateTime.Now;
+        /// <summary>
+        /// 每天清除一次数据,新建新的索引及写入索引
+        /// </summary>
+        private static void Remove()
+        {
+            if(m_now.Day != DateTime.Now.Day)
+            {
+                lock (m_lock)
+                {
+                    if (m_now.Day == DateTime.Now.Day) return;
+                    m_now = DateTime.Now;
+                    m_indexSearch.Clear();
+                    m_indexWrite.Clear();
+                }
+            }
+        }
         private static  IndexWriter GetWriter(String project)
         {
+            Remove();
             if (String.IsNullOrWhiteSpace(project)) project = "NoneName";
             String path = LoggerModel.Getpath(project);
             if (m_indexWrite.ContainsKey(project))
@@ -161,6 +179,7 @@ namespace Lucence.Logger.Web
         }
         private static IndexSearcher GetSearcher(String project)
         {
+            Remove();
             if (String.IsNullOrWhiteSpace(project)) project = "NoneName";
             String path = LoggerModel.Getpath(project);
             if (m_indexSearch.ContainsKey(project))
