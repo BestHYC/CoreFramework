@@ -86,7 +86,7 @@ namespace Framework
             return await RedisHelper<T>.HMGetAsync(key, fields);
         }
 
-        public Task<string> HMSetAsync<T>(string key, T obj) where T : class
+        public Task<string> HMSetAsync<K>(string key, K obj) where K : class
         {
             throw new NotImplementedException();
         }

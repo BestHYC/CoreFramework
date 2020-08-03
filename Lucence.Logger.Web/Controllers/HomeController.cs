@@ -25,7 +25,19 @@ namespace Lucence.Logger.Web.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            MemuModel[] list = RedisHelper.LRangeAsync<MemuModel>("List", 0, -1).Result;
+            return View(list);
+        }
+        [HttpGet]
+        public JsonResult AddProject(String project, String value)
+        {
+            MemuModel memu = new MemuModel()
+            {
+                Name = project,
+                Value = value
+            };
+            var a = RedisHelper.LPushAsync("List", memu).Result;
+            return new JsonResult(a);
         }
         /// <summary>
         /// 
@@ -37,6 +49,7 @@ namespace Lucence.Logger.Web.Controllers
         [HttpGet]
         public JsonResult Logger(String project,String search)
         {
+            if (String.IsNullOrWhiteSpace(search)) search = DateTime.Now.ToDayTime();
             return new JsonResult(LucenceHelper.SearchData(project, search));
         }
         public void Storage()
@@ -47,7 +60,7 @@ namespace Lucence.Logger.Web.Controllers
             {
                 return;
             }
-            path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testtxt.txt");
+            path = Path.Combine(Environment.CurrentDirectory, "testtxt.txt");
             if (System.IO.File.Exists(path))
             {
                 FileInfo file = new FileInfo(path);

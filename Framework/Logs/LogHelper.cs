@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -21,6 +22,21 @@ namespace Framework
         public static void SetProjectName(String projectName)
         {
             m_projectName = projectName;
+        }
+        public static void SetMqLogger(IConfiguration configuration)
+        {
+            var key = configuration.GetSection("MQLogger:Key").Value;
+            if (String.IsNullOrWhiteSpace(key)) throw new Exception("配置错误");
+            var queue = configuration.GetSection("MQLogger:Queue").Value;
+            if (String.IsNullOrWhiteSpace(queue)) throw new Exception("配置错误");
+            var name = configuration.GetSection("MQLogger:SolutionName").Value;
+            if (String.IsNullOrWhiteSpace(name)) name="";
+            var isMq = configuration.GetSection("MQLogger:IsMQLogger").Value;
+            if (String.IsNullOrWhiteSpace(name)) isMq = "False";
+            if(Boolean.TryParse(isMq, out Boolean ismq))
+            {
+                SetMQLogger(key, queue, name);
+            }
         }
         /// <summary>
         /// 当前项目初始化,并且执行MQ操作中的key及Queue

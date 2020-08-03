@@ -1,17 +1,15 @@
 ﻿using Framework;
+using jieba.NET;
+using JiebaNet.Segmenter;
 using Lucene.Net.Analysis;
-using Lucene.Net.Analysis.PanGu;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
-using Lucene.Net.QueryParsers;
 using Lucene.Net.Search;
 using Lucene.Net.Store;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Lucence.Logger.Web
 {
@@ -27,44 +25,28 @@ namespace Lucence.Logger.Web
         public static List<String> SearchData(String project, String str)
         {
             if (String.IsNullOrWhiteSpace(str)) return null;
-            String path = LoggerModel.Getpath(project);
-            if (!File.Exists(Path.Combine(path, "write.lock"))) return null;
             List<String> list = new List<String>();
             try
             {
                 IndexSearcher searcher = GetSearcher(project);
+                if (searcher == null) return list;
                 bool InOrder = true;
                 ScoreDoc[] scoreDoc = SearchTime(searcher, str, "Content", 10, InOrder);
                 foreach (var docs in scoreDoc)
                 {
-                    Document doc = searcher.Doc(docs.doc);
+                    Document doc = searcher.Doc(docs.Doc);
                     String result = doc.Get("Content");
                     if (!String.IsNullOrWhiteSpace(result))
                     {
                         list.Add(result);
                     }
                 }
-                searcher.Close();
             }
-            catch(Exception)
+            catch(Exception e)
             {
-
+                LogHelper.Error("LucenceHelper Search", e.Message);
             }
             return list;
-        }
-
-        static ScoreDoc[] Search(IndexSearcher searcher, string queryString, string field, int numHit, bool inOrder)
-        {
-            TopScoreDocCollector collector = TopScoreDocCollector.create(numHit, inOrder);
-            Analyzer analyser = new PanGuAnalyzer();
-
-            QueryParser parser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, field, analyser);
-
-            Query query = parser.Parse(queryString);
-
-            searcher.Search(query, collector);
-
-            return collector.TopDocs().scoreDocs;
         }
         /// <summary>
         /// 根据时间倒叙查询日志, 注意,如果是并搜索,那么需要&,否则是空格
@@ -79,29 +61,25 @@ namespace Lucence.Logger.Web
         /// <returns></returns>
         static ScoreDoc[] SearchTime(IndexSearcher searcher, string queryString, string field, int numHit, bool inOrder)
         {
-            //TopScoreDocCollector collector = TopScoreDocCollector.create(numHit, inOrder);
-            Analyzer analyser = new PanGuAnalyzer();
-
-            QueryParser parser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, field, analyser);
             var querys = queryString.Split('&');
-            if (querys != null || querys.Length > 1)
+            if (querys != null && querys.Length > 1)
             {
                 BooleanQuery query = new BooleanQuery();
                 foreach (var str in querys)
                 {
                     if (String.IsNullOrWhiteSpace(str)) continue;
-                    query.Add(parser.Parse(str), BooleanClause.Occur.MUST);
+                    BooleanClause clause = new BooleanClause(query, Occur.MUST);
+                    TermQuery term = new TermQuery(new Term("Content", str));
+                    query.Add(term, clause.Occur);
                 }
-                TopFieldDocs topField = searcher.Search(query, null, 20, new Sort(new SortField("Time", SortField.STRING_VAL, true)));
-                return topField.scoreDocs;
+                TopFieldDocs topField = searcher.Search(query, null, 20, new Sort(new SortField("Time", SortFieldType.STRING_VAL, true)));
+                return topField.ScoreDocs;
             }
             else
             {
-                Query query = parser.Parse(queryString);
-                TopFieldDocs topField = searcher.Search(query, null, 20, new Sort(new SortField("Time", SortField.STRING_VAL, true)));
-                //searcher.Search(query, collector);
-
-                return topField.scoreDocs;
+                TermQuery term = new TermQuery(new Term("Content", queryString));
+                TopFieldDocs topField = searcher.Search(term, null, 20, new Sort(new SortField("Time", SortFieldType.STRING_VAL, true)));
+                return topField.ScoreDocs;
             }
 
         }
@@ -114,15 +92,24 @@ namespace Lucence.Logger.Web
             if (model == null) return;
             Document doc = new Document();
             //文件路径
-            doc.Add(new Field("Time", model.Time.ToDefaultTrimTime(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+            doc.Add(new StringField("Time", model.Time.ToDefaultTrimTime(), Field.Store.YES));
             //文件名
-            doc.Add(new Field("Level", model.Level.ToString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
-            doc.Add(new Field("Content", model.ToString(), Field.Store.YES, Field.Index.ANALYZED));
+            doc.Add(new StringField("Level", model.Level.ToString(), Field.Store.YES));
+            doc.Add(new TextField("Content", model.ToString(), Field.Store.YES));
+
             lock (m_lock)
             {
-                IndexWriter fsWriter = GetWriter(model.ProjectName);
-                fsWriter.AddDocument(doc);
-                fsWriter.Commit();
+               
+                try
+                {
+                    IndexWriter fsWriter = GetWriter(model.ProjectName);
+                    fsWriter.AddDocument(doc);
+                    fsWriter.Commit();
+                }
+                catch(Exception e)
+                {
+                    LogHelper.Critical("MQ IndexWriter Create", e);
+                }
             }
         }
         /// <summary>
@@ -169,10 +156,10 @@ namespace Lucence.Logger.Web
                     return m_indexWrite[project];
                 }
                 IndexWriter fsWriter = null;
-                Boolean isExiested = File.Exists(Path.Combine(path, "write.lock"));
                 FSDirectory fsDir = FSDirectory.Open(new DirectoryInfo(path));
-                Analyzer analyser = new PanGuAnalyzer();
-                fsWriter = new IndexWriter(fsDir, analyser, !isExiested, IndexWriter.MaxFieldLength.UNLIMITED);
+                Analyzer analyser = new JieBaAnalyzer(TokenizerMode.Search);
+                IndexWriterConfig writerConfig = new IndexWriterConfig(Lucene.Net.Util.LuceneVersion.LUCENE_48, analyser);
+                fsWriter = new IndexWriter(fsDir, writerConfig);
                 m_indexWrite.TryAdd(project, fsWriter);
                 return fsWriter;
             }
@@ -182,6 +169,7 @@ namespace Lucence.Logger.Web
             Remove();
             if (String.IsNullOrWhiteSpace(project)) project = "NoneName";
             String path = LoggerModel.Getpath(project);
+            if (!File.Exists(Path.Combine(path, "write.lock"))) return null;
             if (m_indexSearch.ContainsKey(project))
             {
                 return m_indexSearch[project];
@@ -192,13 +180,11 @@ namespace Lucence.Logger.Web
                 {
                     return m_indexSearch[project];
                 }
-                bool ReadOnly = true;
                 FSDirectory fsDir = FSDirectory.Open(new DirectoryInfo(path));
-                IndexSearcher searcher = new IndexSearcher(IndexReader.Open(fsDir, ReadOnly));
+                IndexSearcher searcher = new IndexSearcher(DirectoryReader.Open(fsDir));
                 m_indexSearch.TryAdd(project, searcher);
                 return searcher;
             }
-
         }
     }
 }

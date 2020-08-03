@@ -1,16 +1,6 @@
 ﻿using Framework;
-using Lucene.Net.Analysis;
-using Lucene.Net.Analysis.PanGu;
-using Lucene.Net.Documents;
-using Lucene.Net.Index;
-using Lucene.Net.Store;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Lucence.Logger.Web
 {
@@ -33,6 +23,7 @@ namespace Lucence.Logger.Web
             }
             catch (Exception e)
             {
+                LogHelper.Error("LoggerMqConsume", e.Message);
                 return false;
             }
             return true;

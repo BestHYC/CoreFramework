@@ -114,7 +114,7 @@ namespace LuecenceTest
                 fsWriter.AddDocument(doc);
                 fsWriter.Commit();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }
