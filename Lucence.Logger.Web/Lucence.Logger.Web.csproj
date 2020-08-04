@@ -16,6 +16,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="wwwroot\js\MQLogger.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="testtxt.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

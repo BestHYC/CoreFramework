@@ -2,6 +2,7 @@
 using jieba.NET;
 using JiebaNet.Segmenter;
 using Lucene.Net.Analysis;
+using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
@@ -68,17 +69,25 @@ namespace Lucence.Logger.Web
                 foreach (var str in querys)
                 {
                     if (String.IsNullOrWhiteSpace(str)) continue;
-                    BooleanClause clause = new BooleanClause(query, Occur.MUST);
                     TermQuery term = new TermQuery(new Term("Content", str));
+                    BooleanClause clause = new BooleanClause(term, Occur.MUST);
                     query.Add(term, clause.Occur);
                 }
-                TopFieldDocs topField = searcher.Search(query, null, 20, new Sort(new SortField("Time", SortFieldType.STRING_VAL, true)));
+                TopFieldDocs topField = searcher.Search(query, null, 20, new Sort(new SortField("Time", SortFieldType.DOUBLE, true)));
                 return topField.ScoreDocs;
             }
             else
             {
-                TermQuery term = new TermQuery(new Term("Content", queryString));
-                TopFieldDocs topField = searcher.Search(term, null, 20, new Sort(new SortField("Time", SortFieldType.STRING_VAL, true)));
+                querys = queryString.Split('|');
+                BooleanQuery query = new BooleanQuery();
+                foreach (var str in querys)
+                {
+                    if (String.IsNullOrWhiteSpace(str)) continue;
+                    TermQuery term = new TermQuery(new Term("Content", str));
+                    BooleanClause clause = new BooleanClause(term, Occur.SHOULD);
+                    query.Add(term, clause.Occur);
+                }
+                TopFieldDocs topField = searcher.Search(query, null, 20, new Sort(new SortField("Time", SortFieldType.DOUBLE, true)));
                 return topField.ScoreDocs;
             }
 
@@ -157,7 +166,7 @@ namespace Lucence.Logger.Web
                 }
                 IndexWriter fsWriter = null;
                 FSDirectory fsDir = FSDirectory.Open(new DirectoryInfo(path));
-                Analyzer analyser = new JieBaAnalyzer(TokenizerMode.Search);
+                Analyzer analyser = new StandardAnalyzer( Lucene.Net.Util.LuceneVersion.LUCENE_48);
                 IndexWriterConfig writerConfig = new IndexWriterConfig(Lucene.Net.Util.LuceneVersion.LUCENE_48, analyser);
                 fsWriter = new IndexWriter(fsDir, writerConfig);
                 m_indexWrite.TryAdd(project, fsWriter);

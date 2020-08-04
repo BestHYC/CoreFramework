@@ -1,5 +1,4 @@
-﻿@model MemuModel[]
-@{
+﻿@{
     ViewData["Title"] = "日志搜索页";
 }
     <div class="row">
@@ -21,7 +20,6 @@
                                    placeholder="请输入名字">
                         </div>
                         <button class="btn btn-primary col-sm-1" id="searchBtn">搜索</button>
-                        <button class="btn btn-info col-sm-1" id="modalBtn">新增</button>
                         <label>时间:"2020-07-31 12:20:21"需包起来,"And" 用&连接, "Or" 用空格连接</label>
                     </div>
                 </div>
@@ -41,50 +39,10 @@
             </div>
         </div>
     </div>
-    <div class="modal" id="myModal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                        &times;
-                    </button>
-                    <h4 class="modal-title" id="myModalLabel">
-                        新增日志
-                    </h4>
-                </div>
-                <div class="modal-body">
-                    <form class="form-horizontal" role="form">
-                        <div class="form-group">
-                            <label for="firstname" class="col-sm-2 control-label">名称</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="projectName"
-                                       placeholder="请输入系统名字">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="lastname" class="col-sm-2 control-label">Value值</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="projectValue"
-                                       placeholder="请输入Value值">
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">
-                        关闭
-                    </button>
-                    <button type="button" class="btn btn-primary" id="addBtn">
-                        提交更改
-                    </button>
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal -->
-    </div>
 @section Scripts{
     <script type="text/javascript">
         var m_init = {
-            logger: "Home/Logger", addProject: "Home/AddProject"
+            logger: "Home/Logger"
         };
         var m_data = {
             project:"",
@@ -138,7 +96,7 @@
             })
             return false;
         })
-        $("#project li").on("click", function () {
+        $("#project").on("click","li", function () {
             var temp = $(this);
             temp.siblings().removeClass("active");
             temp.addClass("active");
@@ -153,22 +111,6 @@
             m_data.level = temp.attr("data-value");
             $("#searchBtn").trigger("click");
             return false;
-        })
-        $("#addBtn").on("click", function () {
-            var url = m_init.addProject + "?project=" + $("#projectName").val() + "&value=" + $("#projectValue").val();
-            console.log(url);
-            $.ajax({
-                type: "get",
-                url: url,
-                success: function (response) {
-                    console.log(response);
-                    $("#myModal").modal('hide');
-                }
-            })
-        })
-        $("#modalBtn").on("click",function () {
-            console.log("ceeee")
-            $("#myModal").modal('show');
         })
     </script>
 }

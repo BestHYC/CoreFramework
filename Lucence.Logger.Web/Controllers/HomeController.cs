@@ -25,19 +25,7 @@ namespace Lucence.Logger.Web.Controllers
 
         public IActionResult Index()
         {
-            MemuModel[] list = RedisHelper.LRangeAsync<MemuModel>("List", 0, -1).Result;
-            return View(list);
-        }
-        [HttpGet]
-        public JsonResult AddProject(String project, String value)
-        {
-            MemuModel memu = new MemuModel()
-            {
-                Name = project,
-                Value = value
-            };
-            var a = RedisHelper.LPushAsync("List", memu).Result;
-            return new JsonResult(a);
+            return View();
         }
         /// <summary>
         /// 

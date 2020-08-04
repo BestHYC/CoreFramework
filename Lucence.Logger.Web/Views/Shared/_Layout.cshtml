@@ -19,12 +19,6 @@
                 <a class="navbar-brand">日志收集系统</a>
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <ul class="nav nav-tabs" id="project">
-                        @foreach (var m in Model)
-                        {
-                            <li data-value="@m.Value">
-                                <a class="nav-link text-dark">@m.Name</a>
-                            </li>
-                        }
                     </ul>
                 </div>
             </div>
@@ -41,11 +35,25 @@
             &copy; 2020 - Lucence.Logger.Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
-    
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/MQLogger.js"></script>
+    <script>
+        $(function () {
+            var mqBody = "";
+            MQLogger.forEach(function (item, index) {
+                var c = "";
+                if (index == 0) {
+                    c = "active";
+                }
+                mqBody += '<li class="' + c + '" data-value="' + item.value + '"><a class="nav-link text-dark">' + item.name + '</a></li>';
+            })
+            $("#project").html(mqBody);
+        })
+    </script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>

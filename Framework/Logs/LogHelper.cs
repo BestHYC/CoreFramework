@@ -35,7 +35,10 @@ namespace Framework
             if (String.IsNullOrWhiteSpace(name)) isMq = "False";
             if(Boolean.TryParse(isMq, out Boolean ismq))
             {
-                SetMQLogger(key, queue, name);
+                if (ismq)
+                {
+                    SetMqLogger(key, queue, name);
+                }
             }
         }
         /// <summary>
@@ -44,7 +47,7 @@ namespace Framework
         /// <param name="project">项目名</param>
         /// <param name="routeKey">路由值key</param>
         /// <param name="queue">消息队列</param>
-        public static void SetMQLogger(String routeKey, String queue, String project="")
+        public static void SetMqLogger(String routeKey, String queue, String project="")
         {
             m_routeKey = routeKey;
             m_queue = queue;
