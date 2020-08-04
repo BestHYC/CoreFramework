@@ -1,6 +1,7 @@
 ﻿using Framework;
 using Lucene.Net.Analysis;
 using Lucene.Net.Analysis.PanGu;
+using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.QueryParsers;
@@ -44,9 +45,9 @@ namespace Lucence.Logger.Web
                 }
                 searcher.Dispose();
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
+                LogHelper.Critical("日志查询报错" + e.Message);
             }
             return list;
         }
@@ -64,8 +65,8 @@ namespace Lucence.Logger.Web
         static ScoreDoc[] SearchTime(IndexSearcher searcher, string queryString, string field, int numHit, bool inOrder)
         {
             //TopScoreDocCollector collector = TopScoreDocCollector.create(numHit, inOrder);
-            Analyzer analyser = new PanGuAnalyzer();
-
+            Analyzer analyser = new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_30);
+            //Analyzer analyser = new PanGuAnalyzer();
             QueryParser parser = new QueryParser(Lucene.Net.Util.Version.LUCENE_30, field, analyser);
             var querys = queryString.Split('&');
             if (querys != null && querys.Length > 1)
@@ -104,8 +105,14 @@ namespace Lucence.Logger.Web
             lock (m_lock)
             {
                 IndexWriter fsWriter = GetWriter(model.ProjectName);
-                fsWriter.AddDocument(doc);
-                fsWriter.Commit();
+                try
+                {
+                    fsWriter.AddDocument(doc);
+                    fsWriter.Commit();
+                }catch(Exception e)
+                {
+                    LogHelper.Critical(e.ToJson());
+                }
             }
         }
         /// <summary>
@@ -117,8 +124,26 @@ namespace Lucence.Logger.Web
         /// 那么需要重新将索引加载至内存中(每次m_indexWrite时候,去掉缓存的索引)
         /// </summary>
         private static ConcurrentDictionary<String, IndexSearcher> m_indexSearch = new ConcurrentDictionary<String, IndexSearcher>();
+        private static DateTime m_now = DateTime.Now;
+        /// <summary>
+        /// 每天清除一次数据,新建新的索引及写入索引
+        /// </summary>
+        private static void Remove()
+        {
+            if (m_now.Day != DateTime.Now.Day)
+            {
+                lock (m_lock)
+                {
+                    if (m_now.Day == DateTime.Now.Day) return;
+                    m_now = DateTime.Now;
+                    m_indexSearch.Clear();
+                    m_indexWrite.Clear();
+                }
+            }
+        }
         private static IndexWriter GetWriter(String project)
         {
+            Remove();
             if (String.IsNullOrWhiteSpace(project)) project = "NoneName";
             String path = LoggerModel.Getpath(project);
             if (m_indexWrite.ContainsKey(project))
@@ -136,7 +161,8 @@ namespace Lucence.Logger.Web
                 IndexWriter fsWriter = null;
                 Boolean isExiested = File.Exists(Path.Combine(path, "write.lock"));
                 FSDirectory fsDir = FSDirectory.Open(new DirectoryInfo(path));
-                Analyzer analyser = new PanGuAnalyzer();
+                Analyzer analyser = new StandardAnalyzer( Lucene.Net.Util.Version.LUCENE_30);
+                //Analyzer analyser = new PanGuAnalyzer();
                 fsWriter = new IndexWriter(fsDir, analyser, !isExiested, IndexWriter.MaxFieldLength.UNLIMITED);
                 m_indexWrite.TryAdd(project, fsWriter);
                 return fsWriter;
@@ -144,6 +170,7 @@ namespace Lucence.Logger.Web
         }
         private static IndexSearcher GetSearcher(String project)
         {
+            Remove();
             if (String.IsNullOrWhiteSpace(project)) project = "NoneName";
             String path = LoggerModel.Getpath(project);
             if (m_indexSearch.ContainsKey(project))
