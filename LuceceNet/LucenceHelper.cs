@@ -1,4 +1,5 @@
 ﻿using Framework;
+using LuceceNet;
 using Lucene.Net.Analysis;
 using Lucene.Net.Analysis.PanGu;
 using Lucene.Net.Documents;
@@ -10,8 +11,10 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace Lucence.Logger.Web
+namespace LucenceNet
 {
     public class LucenceHelper
     {
@@ -25,7 +28,7 @@ namespace Lucence.Logger.Web
         public static List<String> SearchData(String project, String str)
         {
             if (String.IsNullOrWhiteSpace(str)) return null;
-            String path = LoggerModel.Getpath(project);
+            String path = AllConfig.m_path;
             if (!File.Exists(Path.Combine(path, "write.lock"))) return null;
             List<String> list = new List<String>();
             try
@@ -68,13 +71,12 @@ namespace Lucence.Logger.Web
 
             QueryParser parser = new QueryParser(Lucene.Net.Util.Version.LUCENE_30, field, analyser);
             var querys = queryString.Split('&');
-            if (querys != null && querys.Length > 1)
+            if (querys != null || querys.Length > 1)
             {
                 BooleanQuery query = new BooleanQuery();
                 foreach (var str in querys)
                 {
                     if (String.IsNullOrWhiteSpace(str)) continue;
-                    TermQuery term = new TermQuery(new Term("Content", str));
                     query.Add(parser.Parse(str), Occur.MUST);
                 }
                 TopFieldDocs topField = searcher.Search(query, null, 20, new Sort(new SortField("Time", SortField.STRING_VAL, true)));
@@ -84,6 +86,8 @@ namespace Lucence.Logger.Web
             {
                 Query query = parser.Parse(queryString);
                 TopFieldDocs topField = searcher.Search(query, null, 20, new Sort(new SortField("Time", SortField.STRING_VAL, true)));
+                //searcher.Search(query, collector);
+
                 return topField.ScoreDocs;
             }
 
@@ -120,7 +124,7 @@ namespace Lucence.Logger.Web
         private static IndexWriter GetWriter(String project)
         {
             if (String.IsNullOrWhiteSpace(project)) project = "NoneName";
-            String path = LoggerModel.Getpath(project);
+            String path = AllConfig.m_path;
             if (m_indexWrite.ContainsKey(project))
             {
                 m_indexSearch.TryRemove(project, out var a);
@@ -145,7 +149,7 @@ namespace Lucence.Logger.Web
         private static IndexSearcher GetSearcher(String project)
         {
             if (String.IsNullOrWhiteSpace(project)) project = "NoneName";
-            String path = LoggerModel.Getpath(project);
+            String path = AllConfig.m_path;
             if (m_indexSearch.ContainsKey(project))
             {
                 return m_indexSearch[project];

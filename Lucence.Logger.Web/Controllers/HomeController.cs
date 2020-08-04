@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Lucence.Logger.Web.Models;
 using System.IO;
 using Framework;
-using Lucene.Net.Documents;
 using System.Text;
 
 namespace Lucence.Logger.Web.Controllers
@@ -43,8 +39,7 @@ namespace Lucence.Logger.Web.Controllers
         public void Storage()
         {
             String path = Path.Combine(LoggerModel.Path, "testtxt");
-            String dic = System.IO.Path.Combine(path, DateTime.Now.ToDayTime());
-            if (System.IO.Directory.Exists(dic))
+            if (System.IO.Directory.Exists(path))
             {
                 return;
             }

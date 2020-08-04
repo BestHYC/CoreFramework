@@ -26,9 +26,9 @@ namespace Framework
         public static void SetMqLogger(IConfiguration configuration)
         {
             var key = configuration.GetSection("MQLogger:Key").Value;
-            if (String.IsNullOrWhiteSpace(key)) throw new Exception("配置错误");
+            if (String.IsNullOrWhiteSpace(key)) throw new Exception("SetMqLogger配置错误");
             var queue = configuration.GetSection("MQLogger:Queue").Value;
-            if (String.IsNullOrWhiteSpace(queue)) throw new Exception("配置错误");
+            if (String.IsNullOrWhiteSpace(queue)) throw new Exception("SetMqLogger配置错误");
             var name = configuration.GetSection("MQLogger:SolutionName").Value;
             if (String.IsNullOrWhiteSpace(name)) name="";
             var isMq = configuration.GetSection("MQLogger:IsMQLogger").Value;

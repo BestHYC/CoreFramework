@@ -38,7 +38,15 @@ namespace Lucence.Logger.Web
         }
         public static String Getpath(String name)
         {
-            String dic = System.IO.Path.Combine(Path, name, DateTime.Now.ToDayTime());
+            String dic;
+            if (name == "testtxt")
+            {
+                dic = System.IO.Path.Combine(Path, name);
+            }
+            else
+            {
+                dic = System.IO.Path.Combine(Path, name, DateTime.Now.ToDayTime());
+            }
             if (!System.IO.Directory.Exists(dic))
             {
                 System.IO.Directory.CreateDirectory(dic);

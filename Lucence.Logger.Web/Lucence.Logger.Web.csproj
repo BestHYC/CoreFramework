@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Lucene.JIEba.net" Version="1.1.1" />
+    <PackageReference Include="Lucene.Net.Analysis.PanGu" Version="2.4.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.6" />
     <PackageReference Include="SharpZipLib" Version="1.2.0" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.7.0" />
