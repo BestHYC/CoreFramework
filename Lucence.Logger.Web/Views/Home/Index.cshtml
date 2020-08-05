@@ -15,10 +15,15 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <div class="row">
-                        <div class="col-sm-3">
+                        <div class="col-sm-2">
                             <input type="text" class="form-control" id="search"
                                    placeholder="请输入名字">
                         </div>
+                        <div class='col-sm-2'>
+                            <input type="text" class="form-control" id="dateTime"
+                                   placeholder="请输入时间">
+                        </div>
+
                         <button class="btn btn-primary col-sm-1" id="searchBtn">搜索</button>
                         <label>时间:"2020-07-31 12:20:21"需包起来,"And" 用&连接, "Or" 用空格连接</label>
                     </div>
@@ -45,17 +50,20 @@
             logger: "Home/Logger"
         };
         var m_data = {
-            project:"",
+            project: "",
+            dateTime:"",
             level:"",
             search:""
         };
         $(function () {
             m_data.project = $("#project li.active").attr("data-value");
+            var d = new Date().toLocaleDateString();
+            $('#dateTime').val(d);
             $("#searchBtn").trigger("click");
         })
         $("#searchBtn").on("click", function () {
             var url = m_init.logger;
-            url += "?project=" + m_data.project + "&search=";
+            url += "?project=" + m_data.project + "&dateTime=" + $('#dateTime').val()+ "&search=";
             var search = "";
             if (m_data.level) {
                 search += m_data.level;
@@ -68,7 +76,6 @@
             }
             search += query;
             url += encodeURIComponent(search);
-            console.log(url);
             $.ajax({
                 url: url,
                 type:"get",

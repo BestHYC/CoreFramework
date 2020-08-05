@@ -31,15 +31,16 @@ namespace Lucence.Logger.Web.Controllers
         /// <param name="search"></param>
         /// <returns></returns>
         [HttpGet]
-        public JsonResult Logger(String project,String search)
+        public JsonResult Logger(String project, String dateTime,String search)
         {
-            if (String.IsNullOrWhiteSpace(search)) search = DateTime.Now.ToDayTime();
-            return new JsonResult(LucenceHelper.SearchData(project, search));
+            if (String.IsNullOrWhiteSpace(search)) search = "Warn Info Error Trace";
+            if (!DateTime.TryParse(dateTime, out DateTime dt)) return new JsonResult("错误");
+            return new JsonResult(LucenceHelper.SearchData(project, search, dt));
         }
         public void Storage()
         {
-            String path = Path.Combine(LoggerModel.Path, "testtxt");
-            if (System.IO.Directory.Exists(path))
+            String path = Path.Combine(LoggerModel.Path, "testtxt", "write.lock");
+            if (System.IO.File.Exists(path))
             {
                 return;
             }

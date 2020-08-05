@@ -36,7 +36,7 @@ namespace Lucence.Logger.Web
             MQRouteKey = Configuration.GetSection("LoggerModel:MQRouteKey").Value;
             MQQueueName = Configuration.GetSection("LoggerModel:MQQueueName").Value;
         }
-        public static String Getpath(String name)
+        public static String Getpath(String name, DateTime dt)
         {
             String dic;
             if (name == "testtxt")
@@ -45,7 +45,7 @@ namespace Lucence.Logger.Web
             }
             else
             {
-                dic = System.IO.Path.Combine(Path, name, DateTime.Now.ToDayTime());
+                dic = System.IO.Path.Combine(Path, name, dt.ToDayTime());
             }
             if (!System.IO.Directory.Exists(dic))
             {

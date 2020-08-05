@@ -7,10 +7,12 @@ using Lucene.Net.Index;
 using Lucene.Net.QueryParsers;
 using Lucene.Net.Search;
 using Lucene.Net.Store;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 
 namespace Lucence.Logger.Web
 {
@@ -23,15 +25,15 @@ namespace Lucence.Logger.Web
         /// <param name="project"></param>
         /// <param name="str"></param>
         /// <returns></returns>
-        public static List<String> SearchData(String project, String str)
+        public static List<String> SearchData(String project, String str, DateTime dt)
         {
             if (String.IsNullOrWhiteSpace(str)) return null;
-            String path = LoggerModel.Getpath(project);
+            String path = LoggerModel.Getpath(project, dt);
             if (!File.Exists(Path.Combine(path, "write.lock"))) return null;
             List<String> list = new List<String>();
             try
             {
-                IndexSearcher searcher = GetSearcher(project);
+                IndexSearcher searcher = GetSearcher(project, dt);
                 bool InOrder = true;
                 ScoreDoc[] scoreDoc = SearchTime(searcher, str, "Content", 10, InOrder);
                 foreach (var docs in scoreDoc)
@@ -115,15 +117,6 @@ namespace Lucence.Logger.Web
                 }
             }
         }
-        /// <summary>
-        /// 复用写操作,每个系统一个写对象
-        /// </summary>
-        private static ConcurrentDictionary<String, IndexWriter> m_indexWrite = new ConcurrentDictionary<String, IndexWriter>();
-        /// <summary>
-        /// 复用搜索对象,注意,如果当前系统(上面的m_indexWrite)有更改,
-        /// 那么需要重新将索引加载至内存中(每次m_indexWrite时候,去掉缓存的索引)
-        /// </summary>
-        private static ConcurrentDictionary<String, IndexSearcher> m_indexSearch = new ConcurrentDictionary<String, IndexSearcher>();
         private static DateTime m_now = DateTime.Now;
         /// <summary>
         /// 每天清除一次数据,新建新的索引及写入索引
@@ -141,21 +134,31 @@ namespace Lucence.Logger.Web
                 }
             }
         }
+        /// <summary>
+        /// 复用写操作,每个系统一个写对象
+        /// </summary>
+        private static ConcurrentDictionary<String, IndexWriter> m_indexWrite = new ConcurrentDictionary<String, IndexWriter>();
+        /// <summary>
+        /// 复用搜索对象,注意,如果当前系统(上面的m_indexWrite)有更改,
+        /// 那么需要重新将索引加载至内存中(每次m_indexWrite时候,去掉缓存的索引)
+        /// </summary>
+        private static ConcurrentDictionary<String, ConcurrentDictionary<String, IndexSearcher>> m_indexSearch = new ConcurrentDictionary<String, ConcurrentDictionary<String, IndexSearcher>>();
+        private static Int32 m_update = 0;
         private static IndexWriter GetWriter(String project)
         {
             Remove();
             if (String.IsNullOrWhiteSpace(project)) project = "NoneName";
-            String path = LoggerModel.Getpath(project);
+            String path = LoggerModel.Getpath(project, DateTime.Now);
             if (m_indexWrite.ContainsKey(project))
             {
-                m_indexSearch.TryRemove(project, out var a);
+                Interlocked.Exchange(ref m_update, 1);
                 return m_indexWrite[project];
             }
             lock (m_lock)
             {
                 if (m_indexWrite.ContainsKey(project))
                 {
-                    m_indexSearch.TryRemove(project, out var a);
+                    Interlocked.Exchange(ref m_update, 1);
                     return m_indexWrite[project];
                 }
                 IndexWriter fsWriter = null;
@@ -168,28 +171,44 @@ namespace Lucence.Logger.Web
                 return fsWriter;
             }
         }
-        private static IndexSearcher GetSearcher(String project)
+        private static IndexSearcher GetSearcher(String project, DateTime dt)
         {
             Remove();
             if (String.IsNullOrWhiteSpace(project)) project = "NoneName";
-            String path = LoggerModel.Getpath(project);
+            String path = LoggerModel.Getpath(project, dt);
             if (m_indexSearch.ContainsKey(project))
             {
-                return m_indexSearch[project];
+                var cacheIndex = m_indexSearch[project];
+                if (cacheIndex.ContainsKey(path))
+                {
+                    if (Interlocked.CompareExchange(ref m_update, 0, 1) == 1 && dt.Day == m_now.Day)
+                    {
+                        cacheIndex.TryRemove(path, out var re);
+                    }
+                    else
+                    {
+                        return cacheIndex[path];
+                    }
+                }
+                 
             }
             lock (m_lock)
             {
-                if (m_indexSearch.ContainsKey(project))
+                if (!m_indexSearch.ContainsKey(project))
                 {
-                    return m_indexSearch[project];
+                    m_indexSearch.TryAdd(project, new ConcurrentDictionary<string, IndexSearcher>());
+                }
+                var cacheIndex = m_indexSearch[project];
+                if (cacheIndex.ContainsKey(path))
+                {
+                    return cacheIndex[path];
                 }
                 bool ReadOnly = true;
                 FSDirectory fsDir = FSDirectory.Open(new DirectoryInfo(path));
                 IndexSearcher searcher = new IndexSearcher(IndexReader.Open(fsDir, ReadOnly));
-                m_indexSearch.TryAdd(project, searcher);
+                cacheIndex.TryAdd(path, searcher);
                 return searcher;
             }
-
         }
     }
 }
