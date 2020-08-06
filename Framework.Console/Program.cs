@@ -16,30 +16,24 @@ namespace Framework
     {
         A
     }
+    public class JWTTokenModel
+    {
+        public DateTime Now { get; set; }
+        public String Accountno { get; set; }
+    }
     class Program
     {
         
         static void Main(string[] args)
         {
-            MQRabbitConfig.RabbitConfig = new RabbitConfig()
+            JWTTokenModel m = new JWTTokenModel()
             {
-                Host = "172.18.10.127",
-                Password = "1234",
-                Port = 5672,
-                UserName = "qq",
-                VHost = "/walletcloud"
+                Now = DateTime.Now,
+                Accountno = "2010202830280"
             };
-            LogHelper.SetMQLogger("Logger_Route_Key", "Logger_Queue", "TestConsole");
-            for (Int32 i = 0; i < 10000; i++)
-            {
-                
-                LogHelper.Error(Guid.NewGuid().ToString());
-                LogHelper.Debug(Guid.NewGuid().ToString());
-                LogHelper.Info(Guid.NewGuid().ToString());
-                LogHelper.Trace(Guid.NewGuid().ToString());
-                LogHelper.Warn(Guid.NewGuid().ToString());
-                Thread.Sleep(1000*10);
-            }
+            String p = SecretHelper.DESEncrypt(m.ToJson(), "TrustKey", "TrustKey");
+            String dt = SecretHelper.DESDecrypt(p, "TrustKey", "TrustKey");
+            var a = dt.ToObject<JWTTokenModel>();
             Console.ReadLine();
         }
         private void SetMq()

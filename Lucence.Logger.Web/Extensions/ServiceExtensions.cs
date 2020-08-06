@@ -21,7 +21,6 @@ namespace Lucence.Logger.Web
             // 注意只测试了1G数量的日志,再多没测试,理论会逐渐下降,
             //mq消息队列,配置时候展示,用的时候直接使用
             services.AddHostedService<LoggerMqConsume>();
-            RedisHelper.Initialization(new CSRedisClient(Configuration.GetSection("Redis:Default0").Value));
             return services;
         }
     }

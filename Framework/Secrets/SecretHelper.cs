@@ -93,7 +93,7 @@ namespace Framework
         /// <param name="key">8位字符的密钥字符串(需要和加密时相同)</param>
         /// <param name="iv">8位字符的初始化向量字符串(需要和加密时相同)</param>
         /// <returns></returns>
-        public static T DESDecrypt<T>(string data, string key, string iv)
+        public static String DESDecrypt(string data, string key, string iv)
         {
             if (String.IsNullOrWhiteSpace(key)) key = "";
             if (String.IsNullOrWhiteSpace(iv)) iv = "";
@@ -107,7 +107,7 @@ namespace Framework
             }
             catch
             {
-                return default(T);
+                return "";
             }
 
             DESCryptoServiceProvider cryptoProvider = new DESCryptoServiceProvider();
@@ -115,7 +115,7 @@ namespace Framework
             CryptoStream cst = new CryptoStream(ms, cryptoProvider.CreateDecryptor(byKey, byIV), CryptoStreamMode.Read);
             StreamReader sr = new StreamReader(cst);
             String result = sr.ReadToEnd();
-            return JsonConvert.DeserializeObject<T>(result);
+            return result;
         }
     }
 }
