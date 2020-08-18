@@ -21,11 +21,20 @@ namespace Framework
         public DateTime Now { get; set; }
         public String Accountno { get; set; }
     }
+    public class TestMethod
+    {
+        public void A()
+        {
+
+        }
+    }
     class Program
     {
         
         static void Main(string[] args)
         {
+            Type t = typeof(TestMethod);
+            var a = t.GetMethods(System.Reflection.BindingFlags.Public| System.Reflection.BindingFlags.Instance);
             JWTTokenModel m = new JWTTokenModel()
             {
                 Now = DateTime.Now,
@@ -33,7 +42,7 @@ namespace Framework
             };
             String p = SecretHelper.DESEncrypt(m.ToJson(), "TrustKey", "TrustKey");
             String dt = SecretHelper.DESDecrypt(p, "TrustKey", "TrustKey");
-            var a = dt.ToObject<JWTTokenModel>();
+            //var a = dt.ToObject<JWTTokenModel>();
             Console.ReadLine();
         }
         private void SetMq()

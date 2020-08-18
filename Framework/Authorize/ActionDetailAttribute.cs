@@ -31,6 +31,14 @@ namespace Framework
         {
             
         }
+        public ActionDetailAttribute(ActionId id, String name, String des = "") : this((Int32)id, name, des, name)
+        {
+
+        }
+        public ActionDetailAttribute(ActionId id, String name, String des, String url) : this((Int32)id, name, des, url)
+        {
+
+        }
         public ActionDetailAttribute(Int32 id, String name, String des, String url)
         {
             this.Model = new ActionDetailModel();
@@ -68,4 +76,16 @@ namespace Framework
         [Description("详情")]
         Detail =5,
     }
+    /// <summary>
+    /// 菜单Id
+    /// </summary>
+    public enum ActionId
+    {
+        None = 0,
+        First = 1, Second, Third, Forth, Fifth,
+        Sixth, Seventh, Eighth, Ninth, Tenth, 
+        Eleventh, Twelfth, Thirteenth, Fourteenth, 
+        Fifteenth, Sixteenth
+    }
+
 }

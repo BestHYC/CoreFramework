@@ -38,6 +38,31 @@ namespace Framework
             m_controller = new Dictionary<String, MenuDetailModel>();
             m_menutoaction = new Dictionary<Int32, HashSet<ActionDetailModel>>();
         }
+        /// <summary>
+        /// 默认顶级菜单为0
+        /// </summary>
+        /// <param name="pmenuid"></param>
+        /// <returns></returns>
+        public IEnumerable<MenuDetailModel> GetChildrenMenu(Int32 pmenuid=0)
+        {
+            List<MenuDetailModel> list = new List<MenuDetailModel>();
+            if (m_menupid.ContainsKey(pmenuid))
+            {
+                foreach(var item in m_menupid[pmenuid])
+                {
+                    if (m_menu.ContainsKey(item))
+                    {
+                        list.Add(m_menu[item]);
+                    }
+                }
+            }
+            return list;
+        }
+        public IEnumerable<ActionDetailModel> GetAction(Int32 menuid)
+        {
+            if (m_menutoaction.ContainsKey(menuid)) return m_menutoaction[menuid];
+            return null;
+        }
         public String ConvertRouteToId(String space, String controller,String index)
         {
             String fullname = $"{space}.{controller}"; ;
@@ -100,10 +125,10 @@ namespace Framework
         }
         private void SetMenuDetail(Type t)
         {
-            MenuDetailAttribute menuattr = t.GetCustomAttribute<MenuDetailAttribute>();
-            MenuDetailModel menu = menuattr.GetModel();
-            menu.Namespace = t.Namespace;
+            MenuDetailAttribute menuattr = t?.GetCustomAttribute<MenuDetailAttribute>();
+            MenuDetailModel menu = menuattr?.GetModel();
             if (menu == null) return;
+            menu.Namespace = t.Namespace;
             if (m_menu.ContainsKey(menu.Id))
             {
                 if (m_menu[menu.Id] == menu) return;

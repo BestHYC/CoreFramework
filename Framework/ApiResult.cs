@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -10,11 +11,14 @@ namespace Framework
     }
     public class ApiResult
     {
+        [JsonProperty("code")]
         public ResultStatusEnum Code { get; set; }
+        [JsonProperty("message")]
         public String Message { get; set; }
     }
     public class ApiResult<T> : ApiResult
     {
+        [JsonProperty("data")]
         public T Data { get; set; }
     }
     /// <summary>
