@@ -86,7 +86,7 @@ namespace Framework.ORM.Dapper
             foreach (var item in expression.Arguments)
             {
                 MemberExpression memberExp = (MemberExpression)item;
-                var member = memberExp.Member as MemberInfo;
+                var member = memberExp.Member;
                 Type type = member.ReflectedType;
                 ColumnRelevanceMapper column = new ColumnRelevanceMapper();
                 column.TableName = type;

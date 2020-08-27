@@ -58,6 +58,11 @@ namespace Framework
                               exchange: "message",
                               routingKey: RouteKey);
             channel.BasicQos(0, 5, false);//每次只接收5条消息
+            channel.CallbackException += (model, e) =>
+            {
+                LogHelper.Error("MQCallbackException", model);
+                LogHelper.Error("MQCallbackException", e.Exception.Message);
+            };
             var consumer = new EventingBasicConsumer(channel);
             consumer.Received += (model, ea) =>
             {
