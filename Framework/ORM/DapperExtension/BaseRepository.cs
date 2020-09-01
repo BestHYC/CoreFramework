@@ -7,39 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Framework.ORM.Dapper
-{
-    public class DapperDbContext 
-    {
-        public static DapperDbContext Instance = new DapperDbContext();
-        public Dictionary<String, Func<IDbConnection>> Funcs { get; }
-        private DapperDbContext()
-        {
-            Funcs = new Dictionary<String, Func<IDbConnection>>();
-        }
-        /// <summary>
-        /// 如果有多个数据库操作的,请通过名称区分
-        /// </summary>
-        /// <param name="func"></param>
-        /// <param name="connect"></param>
-        /// <returns></returns>
-        public DapperDbContext AddContext(Func<IDbConnection> func, ConnectTypeEnum connect = ConnectTypeEnum.None)
-        {
-            String name = connect.ToString();
-            AddContext(func, name);
-            return this;
-        }
-        public DapperDbContext AddContext(Func<IDbConnection> func, String name)
-        {
-            if (String.IsNullOrEmpty(name) || func == null)
-            {
-                throw new ArgumentException("不允许默认为空的字典项出现");
-            }
-            Funcs.Add(name, func);
-            return this;
-        }
-    }
-
-    
+{ 
     public abstract class BaseRepository<T> where T : IEntity, new()
     {
         protected ISqlBuilder<T> m_builder { get; }

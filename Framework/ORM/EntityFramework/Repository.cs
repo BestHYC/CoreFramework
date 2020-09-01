@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Dapper;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -216,7 +218,14 @@ namespace Framework.ORM.EntityFramework
 
             return entry?.Entity as TEntity;
         }
-
-
+        public async Task<IEnumerable<T>> Execute<T>(string sql, object obj)
+        {
+            IEnumerable<T> list = null;
+            using (IDbConnection connection = DapperContext.Connection())
+            {
+                list = await connection.QueryAsync<T>(sql, obj);
+            }
+            return list;
+        }
     }
 }

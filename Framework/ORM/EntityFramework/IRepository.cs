@@ -67,7 +67,6 @@ namespace Framework.ORM.EntityFramework
         /// <param name="entities"></param>
         void Insert(List<TEntity> entities);
         Task InsertAsync(List<TEntity> entities);
-
         #endregion Insert
 
         #region Update
@@ -125,7 +124,7 @@ namespace Framework.ORM.EntityFramework
         Task<long> LongCountAsync();
         long LongCount(Expression<Func<TEntity, bool>> predicate);
         Task<long> LongCountAsync(Expression<Func<TEntity, bool>> predicate);
-
+        Task<IEnumerable<T>> Execute<T>(String sql, Object obj);
         #endregion
     }
 }

@@ -40,11 +40,7 @@ namespace Framework.ORM.Dapper
     {
         IDbConnection CreateConnection();
     }
-    public enum ConnectTypeEnum
-    {
-        None = 0, First = 1, Second = 2, Third = 3, Fourth = 4, Fifth = 5, Sixth = 6,
-        Mysql = 7, Sqlserver = 8
-    }
+
 
     public class MysqlBuilder<T> : ISqlBuilder<T> where T : IEntity, new()
     {
