@@ -908,7 +908,8 @@ namespace Framework
                     else
                     {
                         String path = GetPath($"nlog-fatal-{DateTime.Now:yyyy-MM-dd}.log");
-                        File.AppendAllText(path, critical);
+                        
+
                     }
                 }
                 #endregion

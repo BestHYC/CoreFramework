@@ -3,6 +3,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -23,6 +24,53 @@ namespace Framework
         {
             m_projectName = projectName;
         }
+        public static void SetLogger(IConfiguration configuration)
+        {
+            String level = configuration.GetSection("Logging:LogLevel:Default").Value;
+            if (String.IsNullOrWhiteSpace(level)) level = "Max";
+            switch (level)
+            {
+                case "Trace":
+                    LoggerSetting.Level = SealedLogLevel.Trace;
+                    break;
+                case "Debug":
+                    LoggerSetting.Level = SealedLogLevel.Debug;
+                    break;
+                case "Information":
+                    LoggerSetting.Level = SealedLogLevel.Info;
+                    break;
+                case "Warning":
+                    LoggerSetting.Level = SealedLogLevel.Warn;
+                    break;
+                case "Error":
+                    LoggerSetting.Level = SealedLogLevel.Error;
+                    break;
+                default:
+                    LoggerSetting.Level = SealedLogLevel.Max;
+                    break;
+            }
+            String zip = configuration.GetSection("Logging:LogLevel:Zip").Value;
+            if (String.IsNullOrWhiteSpace(zip)) zip = "True";
+            if (Boolean.TryParse(zip, out Boolean iszip))
+            {
+                LoggerSetting.Zip = iszip;
+            }
+            String keepDays = configuration.GetSection("Logging:LogLevel:Days").Value;
+            if (String.IsNullOrWhiteSpace(keepDays)) keepDays = "30";
+            if (Int32.TryParse(keepDays, out Int32 days))
+            {
+                LoggerSetting.KeepDays = days;
+            }
+            else
+            {
+                LoggerSetting.KeepDays = 30;
+            }
+            var key = configuration.GetSection("MQLogger:Key").Value;
+            if (!String.IsNullOrWhiteSpace(key))
+            {
+                SetMqLogger(configuration);
+            }
+        }
         public static void SetMqLogger(IConfiguration configuration)
         {
             var key = configuration.GetSection("MQLogger:Key").Value;
@@ -32,7 +80,7 @@ namespace Framework
             var name = configuration.GetSection("MQLogger:SolutionName").Value;
             if (String.IsNullOrWhiteSpace(name)) name="";
             var isMq = configuration.GetSection("MQLogger:IsMQLogger").Value;
-            if (String.IsNullOrWhiteSpace(name)) isMq = "False";
+            if (String.IsNullOrWhiteSpace(isMq)) isMq = "False";
             if(Boolean.TryParse(isMq, out Boolean ismq))
             {
                 if (ismq)
@@ -40,6 +88,7 @@ namespace Framework
                     SetMqLogger(key, queue, name);
                 }
             }
+
         }
         /// <summary>
         /// 当前项目初始化,并且执行MQ操作中的key及Queue
@@ -215,6 +264,21 @@ namespace Framework
             m_logger.EnqueueLogger(GetLogModel(name, SealedLogLevel.Error, obj));
         }
     }
+    public static class LoggerSetting
+    {
+        /// <summary>
+        /// 最小保存单位,如果没有,则全部保存
+        /// </summary>
+        public static SealedLogLevel Level { get; set; }
+        /// <summary>
+        /// 是否zip压缩,默认压缩
+        /// </summary>
+        public static Boolean Zip { get; set; }
+        /// <summary>
+        /// -1是永久 0 是不保存 默认保存1个月,1个月前全部删除
+        /// </summary>
+        public static Int32 KeepDays { get; set; }
+    }
     public class NewSealedLogger
     {
         private ConcurrentBag<SealedLogModel> m_models0 = new ConcurrentBag<SealedLogModel>();
@@ -304,55 +368,53 @@ namespace Framework
                 {
                     models.TryTake(out var model);
                     if (model == null) continue;
+                    String log = model.ToString();
+                    sb_all.Append(log);
+                    if (model.Level < LoggerSetting.Level) continue;
                     switch (model.Level)
                     {
                         case SealedLogLevel.Debug:
-                            sb_Debug.AppendLine(model.ToString());
+                            sb_Debug.AppendLine(log);
                             break;
                         case SealedLogLevel.Error:
-                            sb_Error.AppendLine(model.ToString());
+                            sb_Error.AppendLine(log);
                             break;
                         case SealedLogLevel.Info:
-                            sb_Info.AppendLine(model.ToString());
+                            sb_Info.AppendLine(log);
                             break;
                         case SealedLogLevel.Trace:
-                            sb_Trace.AppendLine(model.ToString());
+                            sb_Trace.AppendLine(log);
                             break;
                         case SealedLogLevel.Warn:
-                            sb_Warn.AppendLine(model.ToString());
+                            sb_Warn.AppendLine(log);
                             break;
                         default:
-                            sb_Trace.AppendLine(model.ToString());
+                            sb_Trace.AppendLine(log);
                             break; ;
                     }
                 }
                 if (sb_Warn.Length > 0)
                 {
-                    sb_all.Append(sb_Warn);
                     String path = GetPath($"Warn-{DateTime.Now:yyyy-MM-dd}.log");
                     File.AppendAllText(path, sb_Warn.ToString());
                 }
                 if (sb_Debug.Length > 0)
                 {
-                    sb_all.Append(sb_Debug);
                     String path = GetPath($"Debug-{DateTime.Now:yyyy-MM-dd}.log");
                     File.AppendAllText(path, sb_Debug.ToString());
                 }
                 if (sb_Error.Length > 0)
                 {
-                    sb_all.Append(sb_Error);
                     String path = GetPath($"Error-{DateTime.Now:yyyy-MM-dd}.log");
                     File.AppendAllText(path, sb_Error.ToString());
                 }
                 if (sb_Info.Length > 0)
                 {
-                    sb_all.Append(sb_Info);
                     String path = GetPath($"Info-{DateTime.Now:yyyy-MM-dd}.log");
                     File.AppendAllText(path, sb_Info.ToString());
                 }
                 if (sb_Trace.Length > 0)
                 {
-                    sb_all.Append(sb_Trace);
                     String path = GetPath($"Trace-{DateTime.Now:yyyy-MM-dd}.log");
                     File.AppendAllText(path, sb_Trace.ToString());
                 }
@@ -365,17 +427,25 @@ namespace Framework
             {
                 if (sb_all.Length > 0)
                 {
-                    ConvertAllToOtherPath(sb_all.ToString());
+                    //ConvertAllToOtherPath(sb_all.ToString());
+                    String path = Path.Combine(m_path, $"alllog.log");
+                    File.AppendAllText(path, sb_all.ToString());
                 }
             }
         }
         private DateTime m_today = default;
-        private void ConvertAllToOtherPath(String all)
+        /// <summary>
+        /// all中保存所有的文件,每次压缩至新的zip文件中
+        /// zip文件保存30天的数据
+        /// 2020-09-16文件夹中保存文本的日志,1个星期删除1次
+        /// </summary>
+        /// <param name="all"></param>
+        private void ConvertToOtherPath()
         {
-            String path = Path.Combine(m_path, $"alllog.log");
-            if (m_today == default || m_today.Day != DateTime.Now.Day)
+            if (m_today.Day != DateTime.Now.Day)
             {
                 m_today = DateTime.Now;
+                String path = Path.Combine(m_path, $"alllog.log");
                 if (File.Exists(path))
                 {
                     FileInfo info = new FileInfo(path);
@@ -384,9 +454,31 @@ namespace Framework
                         String newPath = GetPath(info.CreationTime, $"all-{info.CreationTime:yyyy-MM-dd}-{m_today.Minute}-{m_today.Millisecond}.log");
                         info.MoveTo(newPath);
                     }
+                    String dic = Path.Combine(m_path, info.CreationTime.ToString("yyyy-MM-dd"));
+                    ZipFile.CreateFromDirectory(dic, GetPath("Collection", $"all-{info.CreationTime:yyyy-MM-dd}-{m_today.Minute}-{m_today.Millisecond}.zip"));
+                    Directory.Delete(dic, true);
+                    String collectionPath = Path.Combine(m_path, "Collection");
+                    var files = Directory.GetFiles(collectionPath);
+                    foreach(var file in files)
+                    {
+                        FileInfo logger = new FileInfo(file);
+                        if(logger.CreationTime.AddDays(30)< DateTime.Now)
+                        {
+                            File.Delete(file);
+                        }
+                    }
+                    var dics =  Directory.GetDirectories(m_path);
+                    foreach (var d in dics)
+                    {
+                        DirectoryInfo logger = new DirectoryInfo(d);
+                        if (logger.Name == "Collection") continue;
+                        if (logger.CreationTime.AddDays(7) < DateTime.Now)
+                        {
+                            Directory.Delete(d, true);
+                        }
+                    }
                 }
             }
-            File.AppendAllText(path, all);
         }
         private string GetPath(String logname)
         {
@@ -395,6 +487,10 @@ namespace Framework
         private String GetPath(DateTime dt, String logname)
         {
             String dic = Path.Combine(m_path, dt.ToString("yyyy-MM-dd"));
+            return GetPath(dic, logname);
+        }
+        private String GetPath(String dic, String logname)
+        {
             if (!Directory.Exists(dic))
             {
                 Directory.CreateDirectory(dic);

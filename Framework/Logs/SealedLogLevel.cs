@@ -10,9 +10,10 @@ namespace Framework
     public enum SealedLogLevel
     {
         Debug,
+        Trace,
         Info,
-        Error,
         Warn,
-        Trace
+        Error,
+        Max
     }
 }

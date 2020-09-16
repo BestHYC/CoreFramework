@@ -6,6 +6,8 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -16,7 +18,11 @@ namespace Framework
 {
     public enum EnumA
     {
-        A
+        A, B, C
+    }
+    public class EnumAT
+    {
+        public static EnumA A { get; set; }
     }
     public class JWTTokenModel
     {
@@ -35,17 +41,6 @@ namespace Framework
         
         static void Main(string[] args)
         {
-            SetMq();
-            Type t = typeof(TestMethod);
-            var a = t.GetMethods(System.Reflection.BindingFlags.Public| System.Reflection.BindingFlags.Instance);
-            JWTTokenModel m = new JWTTokenModel()
-            {
-                Now = DateTime.Now,
-                Accountno = "2010202830280"
-            };
-            String p = SecretHelper.DESEncrypt(m.ToJson(), "TrustKey", "TrustKey");
-            String dt = SecretHelper.DESDecrypt(p, "TrustKey", "TrustKey");
-            //var a = dt.ToObject<JWTTokenModel>();
             Console.ReadLine();
         }
         private static void SetMq()
