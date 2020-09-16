@@ -12,6 +12,10 @@ namespace Framework
 {
     public class NewBaseLogger
     {
+        static NewBaseLogger()
+        {
+            SetLogger();
+        }
         protected static NewSealedLogger m_logger = new NewSealedLogger();
         private static String m_projectName;
         private static String m_routeKey;
@@ -28,48 +32,58 @@ namespace Framework
         {
             String level = configuration.GetSection("Logging:LogLevel:Default").Value;
             if (String.IsNullOrWhiteSpace(level)) level = "Max";
+            SealedLogLevel logLevel;
             switch (level)
             {
                 case "Trace":
-                    LoggerSetting.Level = SealedLogLevel.Trace;
+                    logLevel = SealedLogLevel.Trace;
                     break;
                 case "Debug":
-                    LoggerSetting.Level = SealedLogLevel.Debug;
+                    logLevel = SealedLogLevel.Debug;
                     break;
                 case "Information":
-                    LoggerSetting.Level = SealedLogLevel.Info;
+                    logLevel = SealedLogLevel.Info;
                     break;
                 case "Warning":
-                    LoggerSetting.Level = SealedLogLevel.Warn;
+                    logLevel = SealedLogLevel.Warn;
                     break;
                 case "Error":
-                    LoggerSetting.Level = SealedLogLevel.Error;
+                    logLevel = SealedLogLevel.Error;
                     break;
                 default:
-                    LoggerSetting.Level = SealedLogLevel.Max;
+                    logLevel = SealedLogLevel.Max;
                     break;
             }
             String zip = configuration.GetSection("Logging:LogLevel:Zip").Value;
             if (String.IsNullOrWhiteSpace(zip)) zip = "True";
-            if (Boolean.TryParse(zip, out Boolean iszip))
+            if (!Boolean.TryParse(zip, out Boolean iszip))
             {
-                LoggerSetting.Zip = iszip;
+                iszip = true; 
             }
             String keepDays = configuration.GetSection("Logging:LogLevel:Days").Value;
             if (String.IsNullOrWhiteSpace(keepDays)) keepDays = "30";
-            if (Int32.TryParse(keepDays, out Int32 days))
+            if (!Int32.TryParse(keepDays, out Int32 days))
             {
-                LoggerSetting.KeepDays = days;
+                days = 30;
             }
-            else
-            {
-                LoggerSetting.KeepDays = 30;
-            }
+            SetLogger(logLevel, iszip, days);
             var key = configuration.GetSection("MQLogger:Key").Value;
             if (!String.IsNullOrWhiteSpace(key))
             {
                 SetMqLogger(configuration);
             }
+        }
+        /// <summary>
+        /// 默认如此
+        /// </summary>
+        /// <param name="level"></param>
+        /// <param name="zip"></param>
+        /// <param name="day"></param>
+        private static void SetLogger(SealedLogLevel level = SealedLogLevel.Max, Boolean zip=true, Int32 day=30)
+        {
+            LoggerSetting.Level = level;
+            LoggerSetting.KeepDays = day;
+            LoggerSetting.Zip = zip;
         }
         public static void SetMqLogger(IConfiguration configuration)
         {
@@ -333,6 +347,7 @@ namespace Framework
             try
             {
                 ExecuteModel?.Invoke(item);
+                ConvertToOtherPath();
             }
             catch (Exception e)
             {
@@ -453,21 +468,30 @@ namespace Framework
                     {
                         String newPath = GetPath(info.CreationTime, $"all-{info.CreationTime:yyyy-MM-dd}-{m_today.Minute}-{m_today.Millisecond}.log");
                         info.MoveTo(newPath);
+                        String dic = Path.Combine(m_path, info.CreationTime.ToString("yyyy-MM-dd"));
+                        ZipFile.CreateFromDirectory(dic, GetPath(Path.Combine(m_path, "Collection"), $"all-{info.CreationTime:yyyy-MM-dd}-{m_today.Minute}-{m_today.Millisecond}.zip"));
+                        Directory.Delete(dic, true);
                     }
-                    String dic = Path.Combine(m_path, info.CreationTime.ToString("yyyy-MM-dd"));
-                    ZipFile.CreateFromDirectory(dic, GetPath("Collection", $"all-{info.CreationTime:yyyy-MM-dd}-{m_today.Minute}-{m_today.Millisecond}.zip"));
-                    Directory.Delete(dic, true);
-                    String collectionPath = Path.Combine(m_path, "Collection");
+                }
+                //删除30天以上的日志
+                String collectionPath = Path.Combine(m_path, "Collection");
+                if (Directory.Exists(collectionPath))
+                {
                     var files = Directory.GetFiles(collectionPath);
-                    foreach(var file in files)
+                    foreach (var file in files)
                     {
                         FileInfo logger = new FileInfo(file);
-                        if(logger.CreationTime.AddDays(30)< DateTime.Now)
+                        if (logger.CreationTime.AddDays(30) < DateTime.Now)
                         {
                             File.Delete(file);
                         }
                     }
-                    var dics =  Directory.GetDirectories(m_path);
+                }
+                //删除7天以上的日志,注意,此处与460行代码之间差别
+                //这里是对遗留数据进行保存
+                if (Directory.Exists(m_path))
+                {
+                    var dics = Directory.GetDirectories(m_path);
                     foreach (var d in dics)
                     {
                         DirectoryInfo logger = new DirectoryInfo(d);

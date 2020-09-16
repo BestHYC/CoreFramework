@@ -41,6 +41,7 @@ namespace Framework
         
         static void Main(string[] args)
         {
+            LogHelper.Critical("xxxxxxxxxxxxxxx");
             Console.ReadLine();
         }
         private static void SetMq()
