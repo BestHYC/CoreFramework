@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.1.70</Version>
+    <Version>1.0.1.72</Version>
     <Description>1.日志压缩
 2.日志文件保存7天
 3.日志级别</Description>

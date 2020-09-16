@@ -496,7 +496,7 @@ namespace Framework
                     {
                         DirectoryInfo logger = new DirectoryInfo(d);
                         if (logger.Name == "Collection") continue;
-                        if (logger.CreationTime.AddDays(7) < DateTime.Now)
+                        if (logger.CreationTime.AddDays(30) < DateTime.Now)
                         {
                             Directory.Delete(d, true);
                         }
