@@ -384,7 +384,7 @@ namespace Framework
                     models.TryTake(out var model);
                     if (model == null) continue;
                     String log = model.ToString();
-                    sb_all.Append(log);
+                    sb_all.AppendLine(log);
                     if (model.Level < LoggerSetting.Level) continue;
                     switch (model.Level)
                     {
