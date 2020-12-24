@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,9 +11,9 @@ namespace Framework
     /// 因为HashSet的高速,没必要使用事件锁,浪费大量性能
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class LockHashSet<T>
+    public class LockHashSet<T> : IEnumerable<T>
     {
-        private HashSet<T> m_set = new HashSet<T>();
+        private readonly HashSet<T> m_set = new HashSet<T>();
         private SimpleSpinLock m_lock = new SimpleSpinLock();
         public void Add(T t)
         {
@@ -37,7 +38,7 @@ namespace Framework
         public Boolean Contains(T t)
         {
             m_lock.Enter();
-            Boolean isContains=  m_set.Contains(t);
+            Boolean isContains = m_set.Contains(t);
             m_lock.Leave();
             return isContains;
         }
@@ -46,6 +47,19 @@ namespace Framework
             m_lock.Enter();
             m_set.Clear();
             m_lock.Leave();
+        }
+
+        IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        {
+            return m_set as IEnumerator<T>;
+        }
+
+        public IEnumerator GetEnumerator()
+        {
+            foreach(var item in m_set)
+            {
+                yield return item;
+            }
         }
     }
 }

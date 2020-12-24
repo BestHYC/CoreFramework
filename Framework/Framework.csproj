@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.1.73</Version>
+    <Version>1.0.0.1</Version>
     <Description>1.日志压缩
 2.日志文件保存7天
 3.日志级别</Description>
@@ -14,8 +14,9 @@
 3.锁的基本使用方式
 4.统一权限配置
 5.基于表达式树的AutoMapper自己实现方式</PackageReleaseNotes>
-    <AssemblyVersion>1.0.1.46</AssemblyVersion>
-    <FileVersion>1.0.1.46</FileVersion>
+    <AssemblyVersion>1.0.0.1</AssemblyVersion>
+    <FileVersion>1.0.0.1</FileVersion>
+    <PackageId>Hong.Framework</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

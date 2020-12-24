@@ -58,6 +58,26 @@ namespace Framework
             }
             return list;
         }
+        public IEnumerable<MenuDetailModel> GetAllMenuDetail()
+        {
+            return m_controller.Values;
+        }
+        public HashSet<String> GetAllMenuID()
+        {
+            HashSet<String> hs = new HashSet<String>();
+            foreach(var i in m_controller.Values)
+            {
+                hs.Add(i.Id + "");
+            }
+            foreach(var i in m_menutoaction.Values)
+            {
+                foreach(var ii in i)
+                {
+                    hs.Add(ConvertToId(ii));
+                }
+            }
+            return hs;
+        }
         public IEnumerable<ActionDetailModel> GetAction(Int32 menuid)
         {
             if (m_menutoaction.ContainsKey(menuid)) return m_menutoaction[menuid];

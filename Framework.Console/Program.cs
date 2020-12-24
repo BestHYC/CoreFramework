@@ -9,6 +9,9 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Net;
+using System.Net.Mail;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading;
@@ -39,10 +42,42 @@ namespace Framework
     class Program
     {
         
-        static void Main(string[] args)
+        static void Main(string[] args) 
         {
-            LogHelper.Critical("xxxxxxxxxxxxxxx");
-            Console.ReadLine();
+            var a = (DateTime.Now - new DateTime(2020, 1, 1)).TotalSeconds;
+            Console.WriteLine(a);
+            Console.ReadKey();
+        }
+        private static void SendMail()
+        {
+            MailMessage mailMsg = new MailMessage();//实例化对象
+            mailMsg.From = new MailAddress("970973742@qq.com", "季某人");//源邮件地址和发件人
+            mailMsg.To.Add(new MailAddress("744317625@qq.com"));//收件人地址
+            mailMsg.Subject = "邮件发送测试";//发送邮件的标题
+            StringBuilder sb = new StringBuilder();
+            sb.Append("测试测试测试测试");
+            sb.AppendLine("嘿嘿");
+            sb.AppendLine("嘿嘿");
+            mailMsg.Body = sb.ToString();//发送邮件的内容
+            //指定smtp服务地址（根据发件人邮箱指定对应SMTP服务器地址）qq
+            SmtpClient client = new SmtpClient();//格式：smtp.126.com  smtp.164.com
+            client.Host = "smtp.qq.com";
+            //要用587端口
+            client.Port = 587;//端口
+            //加密
+            client.EnableSsl = true;
+            //通过用户名和密码验证发件人身份
+            client.Credentials = new NetworkCredential("970973742@qq.com", "zondxqrabqgwbcgj"); // 
+            //发送邮件
+            try
+            {
+                client.Send(mailMsg);
+            }
+            catch (SmtpException ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            Console.WriteLine("邮件已发送，请注意查收！");
         }
         private static void SetMq()
         {

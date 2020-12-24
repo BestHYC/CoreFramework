@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Framework.Console", "Framew
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lucence.Logger.Web", "Lucence.Logger.Web\Lucence.Logger.Web.csproj", "{B42FE8DD-70F5-44C0-87E8-8F204CEDADE0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lodis", "Lodis\Lodis.csproj", "{47738CD8-BCBB-402F-93CB-090FF96739F7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{B42FE8DD-70F5-44C0-87E8-8F204CEDADE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B42FE8DD-70F5-44C0-87E8-8F204CEDADE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B42FE8DD-70F5-44C0-87E8-8F204CEDADE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47738CD8-BCBB-402F-93CB-090FF96739F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47738CD8-BCBB-402F-93CB-090FF96739F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47738CD8-BCBB-402F-93CB-090FF96739F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47738CD8-BCBB-402F-93CB-090FF96739F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -93,7 +93,7 @@ namespace Framework.ORM.Dapper
                 column.ColumnName = member.Name;
                 reduce.Add(column);
             }
-        }
+        }   
         private static void MemberExpression(MemberExpression expression,
             in ParameterReduce reduce)
         {
