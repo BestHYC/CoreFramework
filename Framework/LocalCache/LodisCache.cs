@@ -140,6 +140,12 @@ namespace Framework
         }
         public static void Init()
         {
+            //只要启动过此程序,那么就新增1,后期更新一次,就降低一次数据,
+            //如果一直不为0,会一直产生消费者数据,所以注意次数
+            //注意:此处可能会出现前一次已经是10,后期没有消费完成,
+            //重启程序后,此处变成20,那么就需要一个检测机制,是否属可以正常新增
+            String path = AppDomain.CurrentDomain.DynamicDirectory;
+            RedisHelper.SAdd("channel_redis_localcache_subscribe_num", path);
             RedisHelper.Subscribe(("channel_redis_localcache_subscribe",
                 item =>
                 {
@@ -169,7 +175,8 @@ namespace Framework
             action();
         }
         /// <summary>
-        /// 
+        /// 注意此处,channel是写死,导致此处如果被大量写入时候,会经常发生监听
+        /// 所以做成可配置的,这样可以做成一个guid配置上去,做此数据单列
         /// </summary>
         /// <param name="key"></param>
         public static void Publish(String key)

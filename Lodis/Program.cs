@@ -18,7 +18,6 @@ namespace Lodis
                 Thread.Sleep(20*1000);
                 Console.WriteLine(ACache.m_cache_String);
             }
-            Console.WriteLine("Hello World!");
         }
     }
     public class ACache
